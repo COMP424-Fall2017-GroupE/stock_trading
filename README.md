@@ -22,6 +22,6 @@
 
 #### Possible resources
 - [Passport](http://passportjs.org/)
-- [Mean.io fullstack javascript framework](mean.io)
+- [Mean.io fullstack javascript framework](http://mean.io)
 
 
