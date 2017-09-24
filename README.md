@@ -1,8 +1,8 @@
 # COMP 424 Client-Side Web Design Fall 2017
-## Stock Trading Simulator Project Assignment
+## Project Assignment: Stock Trading Simulator
 ### Created from a [HTML5 Boilerplate](https://html5boilerplate.com/) template
 
-#### Group members
+#### Group E members
 - Daniel Golaszewski
 - Jeffrey Rice
 - Suleiman Imtiaz Ahmed
