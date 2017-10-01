@@ -24,4 +24,6 @@
 - [Passport](http://passportjs.org/)
 - [Mean.io fullstack javascript framework](http://mean.io)
 
+#### Application outline
+- [OUTLINE.md](https://github.com/COMP424-Fall2017-GroupE/stock_trading/blob/master/OUTLINE.md)
 
