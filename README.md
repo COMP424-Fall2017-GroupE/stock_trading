@@ -27,3 +27,7 @@
 #### Application outline
 - [OUTLINE.md](https://github.com/COMP424-Fall2017-GroupE/stock_trading/blob/master/OUTLINE.md)
 
+#### Application mockups
+- [Login page](https://github.com/COMP424-Fall2017-GroupE/stock_trading/blob/master/src/resources/login%20page.jpg)
+- [Home page](https://github.com/COMP424-Fall2017-GroupE/stock_trading/blob/master/src/resources/home%20page.jpg)
+- [Trading page](https://github.com/COMP424-Fall2017-GroupE/stock_trading/blob/master/src/resources/buy%20stock%20page.jpg)
