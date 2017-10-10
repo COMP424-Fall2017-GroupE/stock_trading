@@ -359,11 +359,12 @@ border:1px solid #2a2c2f; -webkit-border-radius: 3px; -moz-border-radius: 3px;bo
 
 
    #sidebar {
-    width: 10%;
+    width: 8%;
     height: 100%;
     float: left;
     position: relative;
     overflow: hidden;
+    padding: 10px;
    }
 
    #content {
