@@ -52,7 +52,25 @@
             <article class="render-quote"></article>
 
             <!-- chart article -->
-            <article class="chart"></article>
+            <article class="chart">
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script>
+                    new TradingView.widget({
+                        "width": 500,
+                        "height": 300,
+                        "symbol": "AAPL",
+                        "interval": "D",
+                        "timezone": "Etc/UTC",
+                        "theme": "Light",
+                        "style": "1",
+                        "locale": "en",
+                        "toolbar_bg": "#f1f3f6",
+                        "enable_publishing": false,
+                        "allow_symbol_change": true,
+                        "hideideas": true
+                    });
+                </script>
+            </article>
 
             <!-- trade article -->
             <article class="trade">
@@ -81,7 +99,6 @@
 <script src="../src/js/plugins.js"></script>
 <script src="../src/js/main.js"></script>
 <script type="text/javascript" src="../src/js/getquote.js"></script>
-<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 
 
 </body>
