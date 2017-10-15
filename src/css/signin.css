@@ -1,0 +1,82 @@
+
+   /* ==========================================================================
+   Sign in page
+   ========================================================================== */
+
+   main {
+    
+    background-color: #f4f4f4;
+    text-align: center;
+   }
+
+   h2 {
+   	text-align: center;
+    font-weight: 200;
+   }
+
+   section {
+
+	display: inline-block;
+   	width: 420px;
+   	padding: 20px;
+   	margin: 60px auto;
+   	background-color: #fff;
+
+   }
+
+
+
+   .left-text {
+    text-align: left;
+   }
+
+
+ section.flat button {
+	width: 100%;
+    font-size: 0.9em;
+    color: #fff;
+    background-color: #51b553;
+    border: none;
+    padding: 12px;
+    margin-bottom: 50px;
+}
+
+section.flat button:hover,
+section.flat button.hover {
+  background-color: #74c675;
+  cursor: pointer;
+}
+
+section.flat button:active,
+section.flat button.active {
+  background-color: #479e48;
+}
+
+
+::selection {
+    background: #51b553;
+    text-shadow: none;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+
+input:focus {
+
+	border-color: #51b553;
+
+}
+
+input {
+
+	margin: 6px 0;
+	min-height: 35px;
+	width: 100%;
+	background-color: #fff;
+	border-color: #51b553;
+}

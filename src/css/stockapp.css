@@ -299,12 +299,12 @@ h1 {
 
 a {
     text-decoration: none;
-    color: #8e8f90;
+    color: #55b554;
 }
 
 a:hover {
     text-decoration: underline;
-    color: #ccc;
+    color: #74c675;
     cursor: pointer; cursor: hand;
 }
 
