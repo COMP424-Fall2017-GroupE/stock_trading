@@ -4,6 +4,8 @@ function getQuotes() {
     let quote;
     let quantity;
     let dealSum;
+    let apiKey;
+    let metaData;
 
     // let $chart = $(".chart");
 
@@ -11,12 +13,15 @@ function getQuotes() {
         ticker = $(".get-quote input").val();
         if (ticker !== "") {
             // fetch quote
-            let url = `https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quotes%20where%20symbol%20in%20("${ticker}")&format=json&env=store://datatables.org/alltableswithkeys&callback=`;
+            let apiKey = '38HEIOY4TO9U5D4S';
+            let url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=MSFT&apikey=38HEIOY4TO9U5D4S`;
             let $quote = $("<p>");
+         
 
             $.getJSON(url, function (data) {
-                if (data.query.results.quote.Ask !== null) {
-                    quote = data.query.results.quote.Ask;
+                if (data != null) {
+                    quote = data;
+                    console.log(quote);
                     $quote.html(`Current price of ${ticker}: ${quote}`);
                 }
                 else {
@@ -94,4 +99,3 @@ function getQuotes() {
 }
 
 $(document).ready(getQuotes);
-
