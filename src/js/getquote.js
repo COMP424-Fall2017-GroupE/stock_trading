@@ -4,8 +4,7 @@ function getQuotes() {
     let quote;
     let quantity;
     let dealSum;
-    let apiKey;
-    let metaData;
+    let apiKey = "38HEIOY4TO9U5D4S";
 
     // let $chart = $(".chart");
 
@@ -13,21 +12,29 @@ function getQuotes() {
         ticker = $(".get-quote input").val();
         if (ticker !== "") {
             // fetch quote
-            let apiKey = '38HEIOY4TO9U5D4S';
-            let url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=MSFT&apikey=38HEIOY4TO9U5D4S`;
+            let url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${ticker}&interval=60min&outputsize=compact&apikey=${apiKey}`;
             let $quote = $("<p>");
-         
 
-            $.getJSON(url, function (data) {
-                if (data != null) {
-                    quote = data;
-                    console.log(quote);
-                    $quote.html(`Current price of ${ticker}: ${quote}`);
-                }
-                else {
-                    alert(`${ticker} ticker symbol not found`);
-                }
-            });
+            // parse JSON
+            $.getJSON(url)
+                .done(function (json) {
+                    if (json !== undefined) {
+                        Object.keys(json["Time Series (60min)"]).every(function (key) {
+                            let index = 0;
+                            if (index === 0) {
+                                quote = json["Time Series (60min)"][key]["4. close"];
+                                $quote.html(`The current price of ${ticker} is $${quote}`);
+                                return false;
+                            }
+                        });
+                    }
+                    else {
+                        alert(`${ticker} ticker symbol not found`);
+                    }
+                })
+                .fail(function () {
+                    alert(`Failed to fetch ${ticker} data`);
+                });
 
             // render quote
             $(".render-quote").empty().append($quote);
