@@ -18,15 +18,10 @@ function getQuotes() {
             // parse JSON
             $.getJSON(url)
                 .done(function (json) {
-                    if (json !== undefined) {
-                        Object.keys(json["Time Series (60min)"]).every(function (key) {
-                            let index = 0;
-                            if (index === 0) {
-                                quote = json["Time Series (60min)"][key]["4. close"];
-                                $quote.html(`The current price of ${ticker} is $${quote}`);
-                                return false;
-                            }
-                        });
+                    if (typeof json !== 'undefined' && typeof json !== 'null' && !json["Error Message"]) {
+                        let key = json["Meta Data"]["3. Last Refreshed"];
+                        quote = json["Time Series (60min)"][key]["4. close"];
+                        $quote.html(`The current price of ${ticker} is $${quote}`);
                     }
                     else {
                         alert(`${ticker} ticker symbol not found`);
