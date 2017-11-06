@@ -5,9 +5,14 @@ function getQuotes() {
     let quantity;
     let dealSum;
     let apiKey = "38HEIOY4TO9U5D4S";
+    let trnumber = 0;
+    let transactions = [];
+    let portfolio = {
+        Money: 10000,
+        Stocks: []
+    };
 
-    // let $chart = $(".chart");
-
+    // implementation of fetching and rendering quotes, updating chart
     function getQuote() {
         ticker = $(".get-quote input").val();
         if (ticker !== "") {
@@ -50,21 +55,29 @@ function getQuotes() {
         }
     }
 
+    // implementation of buying / selling stocks
     function trade() {
         quantity = $(".trade input[name='quantity']").val();
-        if (quote > 0) {
-            if (quantity > 0) {
+        if (Number(quote) > 0) {
+            if (Number(quantity) > 0) {
                 let $trade = $("<p>");
                 switch ($("input:checked").val()) {
                     case "buy":
                         dealSum = (-quantity * quote).toFixed(2);
-                        $trade.html(`You bought ${quantity} ${ticker} stocks @ $${quote} and spent $${dealSum}`);
-                        $(".history").append($trade);
+                        if (storeTransaction()) {
+                            trnumber++;
+                            $trade.html(`You bought ${quantity} ${ticker} stocks @ $${quote} and spent $${dealSum}`);
+                            $(".history").append($trade);
+                        }
                         break;
                     case "sell":
                         dealSum = (quantity * quote).toFixed(2);
-                        $trade.html(`You sold ${quantity} ${ticker} stocks @ $${quote} and received $${dealSum}`);
-                        $(".history").append($trade);
+                        quantity = -quantity;
+                        if (storeTransaction()) {
+                            trnumber++;
+                            $trade.html(`You sold ${quantity} ${ticker} stocks @ $${quote} and received $${dealSum}`);
+                            $(".history").append($trade);
+                        }
                         break;
                     default:
                         alert("Please select an option");
@@ -77,6 +90,56 @@ function getQuotes() {
         }
     }
 
+    // helper function to store transaction into memory and update user's portfolio
+    function storeTransaction() {
+        // check if there is a stock in the portfolio
+        let found = false;
+        let index;
+        portfolio.Stocks.forEach(function (item, i) {
+            if (item.Ticker === ticker) {
+                found = true;
+                index = i;
+            }
+        });
+
+        // append portfolio with 0 stocks if needed
+        if (!found) {
+            portfolio.Stocks.push(
+                {
+                    Ticker: ticker,
+                    Quantity: 0
+                }
+            );
+            index = portfolio.Stocks.length - 1;
+        }
+
+        // check if there is sufficient money / stock and update transactions and portfolio
+        if ((portfolio.Money + Number(dealSum)) >= 0) {
+            if ((portfolio.Stocks[index].Quantity + Number(quantity) >= 0)) {
+                transactions.push(
+                    {
+                        Number: trnumber,
+                        Type: $("input:checked").val(),
+                        Symbol: ticker,
+                        Quantity: quantity,
+                        Price: quote,
+                        Sum: dealSum
+                    }
+                );
+                portfolio.Money += Number(dealSum);
+                portfolio.Stocks[index].Quantity += Number(quantity);
+                return true;
+            }
+            else {
+                alert("Insufficient stocks");
+                return false;
+            }
+        }
+        else {
+            alert("Insufficient money");
+            return false;
+        }
+    }
 
     //handle user events
     $(".get-quote button").on("click", function (e) {
