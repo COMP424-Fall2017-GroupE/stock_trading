@@ -63,6 +63,8 @@ function getQuotes() {
 
 
 
+
+
             // parse JSON
             $.getJSON(url)
                 .done(function (json) {
@@ -70,19 +72,60 @@ function getQuotes() {
 
 
 
+
+
+
+                                          function walk(obj) {
+                                            for (var key in obj) {
+                                              if (obj.hasOwnProperty(key)) {
+                                                var val = obj[key];
+                                                console.log(val);
+                                               // walk(val);   // recursive call
+                                              }
+                                            }
+                                          }
+
+
+                                 //         walk(json);
+                        
+
+
                         // find necessary quote
                       let key = json["Meta Data"]["3. Last Refreshed"];
-                      let quote = json["Time Series (Daily)"][key]["4. close"];
+                      let date = key.substr(0,key.indexOf(' ')); // only the Day is used in this object, cut off the time
+                      let dailyQuote = json["Time Series (Daily)"][date];
 
 
+                                        walk(json["Time Series (Daily)"]);
+
+                        
+                      //  var totalMessages = Object.keys(messages.dialog.trunks).length;
+
+
+
+
+
+
+
+                            for (var currentItem in dailyQuote) {
+                                if (json.hasOwnProperty(currentItem)) {
+
+
+
+                                    console.log(currentItem + " -> " + json[currentItem]);
+
+
+                                }
+                            }
 
 
                         // render quote
                         $quote.html(`The current price of ${ticker} is $${quote}`);
                         $(".render-data").empty().append($quote);
 
-                        console.log(quote);
-
+                        console.log(key);
+                        console.log(date);
+                        console.log(dailyQuote);
 
 
 
