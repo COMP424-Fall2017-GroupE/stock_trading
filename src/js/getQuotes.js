@@ -99,24 +99,8 @@ function getQuotes() {
                                         walk(json["Time Series (Daily)"]);
 
                         
-                      //  var totalMessages = Object.keys(messages.dialog.trunks).length;
 
 
-
-
-
-
-
-                            for (var currentItem in dailyQuote) {
-                                if (json.hasOwnProperty(currentItem)) {
-
-
-
-                                    console.log(currentItem + " -> " + json[currentItem]);
-
-
-                                }
-                            }
 
 
                         // render quote
