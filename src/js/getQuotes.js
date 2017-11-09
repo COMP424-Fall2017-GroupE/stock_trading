@@ -20,10 +20,15 @@ function getQuotes() {
             let url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${ticker}&interval=60min&outputsize=compact&apikey=${apiKey}`;
             let $quote = $("<p>");
 
+
+
             // parse JSON
             $.getJSON(url)
                 .done(function (json) {
                     if (typeof json !== 'undefined' && typeof json !== 'null' && !json["Error Message"]) {
+
+
+
                         // find necessary quote
                         let key = json["Meta Data"]["3. Last Refreshed"];
                         quote = json["Time Series (60min)"][key]["4. close"];
@@ -32,9 +37,6 @@ function getQuotes() {
                         $quote.html(`The current price of ${ticker} is $${quote}`);
                         $(".render-quote").empty().append($quote);
 
-                        // update chart source
-                        let src = `https://s.tradingview.com/widgetembed/?symbol=${ticker}&amp;interval=D&amp;symboledit=1&amp;saveimage=1&amp;toolbarbg=f1f3f6&amp;studies=%5B%5D&amp;hideideas=1&amp;theme=Light&amp;style=1&amp;timezone=Etc%2FUTC&amp;studies_overrides=%7B%7D&amp;overrides=%7B%7D&amp;enabled_features=%5B%5D&amp;disabled_features=%5B%5D&amp;locale=en&amp;utm_source=localhost&amp;utm_medium=widget&amp;utm_campaign=chart&amp;utm_term=${ticker}`;
-                        $("iframe").attr("src", src);
                     }
                     else {
                         alert(`${ticker} ticker symbol not found`);
@@ -46,6 +48,59 @@ function getQuotes() {
         } else {
             alert("Please enter ticker symbol");
         }
+    
+
+    }
+
+
+        function getData() {
+        ticker = $(".get-data input").val();
+        if (ticker !== "") {
+            // fetch quote
+
+            let url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${ticker}&interval=60min&outputsize=full&apikey=${apiKey}`;
+            let $quote = $("<p>");
+
+
+
+            // parse JSON
+            $.getJSON(url)
+                .done(function (json) {
+                    if (typeof json !== 'undefined' && typeof json !== 'null' && !json["Error Message"]) {
+
+
+
+                        // find necessary quote
+                      let key = json["Meta Data"]["3. Last Refreshed"];
+                      let quote = json["Time Series (Daily)"][key]["4. close"];
+
+
+
+
+                        // render quote
+                        $quote.html(`The current price of ${ticker} is $${quote}`);
+                        $(".render-data").empty().append($quote);
+
+                        console.log(quote);
+
+
+
+
+
+
+                    }
+                    else {
+                        alert(`${ticker} ticker symbol not found`);
+                    }
+                })
+                .fail(function () {
+                    alert(`Failed to fetch ${ticker} data`);
+                });
+        } else {
+            alert("Please enter ticker symbol");
+        }
+    
+
     }
 
     // implementation of buying / selling stocks
@@ -142,6 +197,17 @@ function getQuotes() {
     $(".get-quote input").on("keypress", function (e) {
         if (e.keyCode === 13) {
             getQuote();
+        }
+    });
+
+        //handle user events
+    $(".get-data button").on("click", function (e) {
+        getData();
+    });
+
+    $(".get-data input").on("keypress", function (e) {
+        if (e.keyCode === 13) {
+            getData();
         }
     });
 
