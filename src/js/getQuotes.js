@@ -72,14 +72,33 @@ function getQuotes() {
 
 
 
+                                        var dailySeries = { members: {} }; // create a new json object to hold the data
+                                        
 
 
+                                          var i = 0;
 
+                                          // This is a function to walk through a json object
                                           function walk(obj) {
                                             for (var key in obj) {
                                               if (obj.hasOwnProperty(key)) {
-                                                var val = obj[key];
-                                                console.log(val);
+                                                 var val = obj[key];
+
+                                               
+
+                                                 var newMember = "member" + i;  // call each day a member of our daily series
+                                                 var newValue = val;
+
+
+
+                                                dailySeries.members[newMember] = newValue; //  add a each object in the returned json to our dailySerious object
+                                        
+
+
+ 
+
+                                                i++
+                                               // console.log(val);
                                                // walk(val);   // recursive call
                                               }
                                             }
@@ -97,7 +116,7 @@ function getQuotes() {
 
 
                                         walk(json["Time Series (Daily)"]);
-
+                                        console.log(dailySeries);
                         
 
 
