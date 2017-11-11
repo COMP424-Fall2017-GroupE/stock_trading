@@ -72,7 +72,7 @@ function getQuotes() {
 
 
 
-                                        var dailySeries = { members: {} }; // create a new json object to hold the data
+                                        var dailySeries = { }; // create a new json object to hold the data
                                         
 
 
@@ -85,32 +85,25 @@ function getQuotes() {
 
                                             
 
-                                                 var val = obj[key];
+                                                 var val = obj[key]; // the objects contents
 
-                                               
-
-
-
-                                                 var newMember = key;  // call each day a member of our daily series
-                                                 var newValue = val;
+                                                 var newMember = key;  // use the date as the key for our new object
 
 
                                               //    console.log(val);
-                                                dailySeries.members[newMember] = newValue; //  add a each object in the returned json to our dailySerious object
+                                                dailySeries[newMember] = val; //  add a each object in the returned json to our dailySerious object
                                         
 
 
  
 
                                                 i++
-                                               // console.log(val);
                                                // walk(val);   // recursive call
                                               }
                                             }
                                           }
 
 
-                                 //         walk(json);
                         
 
 
