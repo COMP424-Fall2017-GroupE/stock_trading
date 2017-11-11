@@ -82,15 +82,20 @@ function getQuotes() {
                                           function walk(obj) {
                                             for (var key in obj) {
                                               if (obj.hasOwnProperty(key)) {
+
+                                            
+
                                                  var val = obj[key];
 
                                                
 
-                                                 var newMember = "member" + i;  // call each day a member of our daily series
+
+
+                                                 var newMember = key;  // call each day a member of our daily series
                                                  var newValue = val;
 
 
-
+                                              //    console.log(val);
                                                 dailySeries.members[newMember] = newValue; //  add a each object in the returned json to our dailySerious object
                                         
 
