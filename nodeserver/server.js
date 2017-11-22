@@ -2,9 +2,11 @@ var express = require('express');
 var http = require('http');
 var mongoose = require('mongoose');
 var app = express();
+var bodyParser = require('body-parser');
 
 // start the server
 app.use(express.static(__dirname + "/../src/"));
+app.use(bodyParser.urlencoded({extended: false}));
 http.createServer(app).listen(3030);
 
 // establish database connection
@@ -20,13 +22,13 @@ http.createServer(app).listen(3030);
 // });
 
 
-// app.get("/", function (req, res) {
-//     res.sendFile(path.join(__dirname + "/../src/dashboard.html"));
-//     io.on('connection', function (socket) {
-//         socket.on('connexion_client', function(data) {
-//             res.redirect(path.join(__dirname + "/../src/dashboard.html"));
-//         });
-//     });
-// });
+app.get("/", function (req, res) {
+    res.sendFile(path.join(__dirname + "/../src/dashboard.html"));
+    io.on('connection', function (socket) {
+        socket.on('connexion_client', function (data) {
+            res.redirect(path.join(__dirname + "/../src/dashboard.html"));
+        });
+    });
+});
 
 
