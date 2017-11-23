@@ -7,10 +7,24 @@ function getQuotes() {
     let apiKey = "38HEIOY4TO9U5D4S";
     let trnumber = 0;
     let transactions = [];
-    let portfolio = {
-        Money: 10000,
-        Stocks: []
-    };
+
+    // let stock = {
+    //     "Ticker": "AAPL",
+    //     "Amount": 100
+    // }
+    //
+    // $.post("/resources", stock, function (response) {
+    //     console.log("server post response returned..." + response.toSource());
+    // });
+
+    $.getJSON("stocks.json")
+        .done(function (json) {
+            json.forEach(function (item) {
+                if (item !== null) {
+                    console.log(item);
+                }
+            })
+        });
 
     // implementation of fetching and rendering quotes, updating chart
     function getQuote() {
@@ -23,7 +37,7 @@ function getQuotes() {
             // parse JSON
             $.getJSON(url)
                 .done(function (json) {
-                    if (typeof json !== 'undefined' && typeof json !== 'null' && !json["Error Message"]) {
+                    if (json !== undefined && typeof json !== 'null' && !json["Error Message"]) {
                         // find necessary quote
                         let key = json["Meta Data"]["3. Last Refreshed"];
                         quote = json["Time Series (60min)"][key]["4. close"];
@@ -99,8 +113,8 @@ function getQuotes() {
         if (!found) {
             portfolio.Stocks.push(
                 {
-                    Ticker: ticker,
-                    Quantity: 0
+                    "Ticker": ticker,
+                    "Quantity": 0
                 }
             );
             index = portfolio.Stocks.length - 1;
@@ -111,12 +125,12 @@ function getQuotes() {
             if ((portfolio.Stocks[index].Quantity + Number(quantity) >= 0)) {
                 transactions.push(
                     {
-                        Number: trnumber,
-                        Type: $("input:checked").val(),
-                        Symbol: ticker,
-                        Quantity: quantity,
-                        Price: quote,
-                        Sum: dealSum
+                        "Number": trnumber,
+                        "Type": $("input:checked").val(),
+                        "Symbol": ticker,
+                        "Quantity": quantity,
+                        "Price": quote,
+                        "Sum": dealSum
                     }
                 );
                 portfolio.Money += Number(dealSum);
@@ -146,7 +160,14 @@ function getQuotes() {
     });
 
     $(".trade button").on("click", function (e) {
-        trade();
+        //trade();
+        var portfolio = {
+            "Money": 10000,
+            "Stocks": []
+        };
+        $.post("/resources", portfolio, function (response) {
+            console.log("server post response returned..." + response);
+        });
     });
 
     $(".trade input[name='quantity']").on("keypress", function (e) {
