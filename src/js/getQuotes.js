@@ -10,6 +10,8 @@ function getQuotes() {
 
     // implementation of fetching and rendering quotes, updating chart
     function getQuote() {
+        let $errorMessage = $("#getQuoteError");
+        $errorMessage.html("");
         ticker = $(".get-quote input").val();
         if (ticker !== "") {
             // fetch quote
@@ -33,14 +35,14 @@ function getQuotes() {
                         $("iframe").attr("src", src);
                     }
                     else {
-                        alert(`${ticker} ticker symbol not found`);
+                        $errorMessage.html(`${ticker} ticker symbol not found`);
                     }
                 })
                 .fail(function () {
-                    alert(`Failed to fetch ${ticker} data`);
+                    $errorMessage.html(`Failed to fetch ${ticker} data`);
                 });
         } else {
-            alert("Please enter ticker symbol");
+            $errorMessage.html("Please enter ticker symbol");
         }
     }
 
