@@ -7,28 +7,21 @@ function getQuotes() {
     let apiKey = "38HEIOY4TO9U5D4S";
     let trnumber = 0;
     let transactions = [];
-    let portfolio = {
-        Money: 10000,
-        Stocks: []
-    };
 
     // implementation of fetching and rendering quotes, updating chart
     function getQuote() {
+        let $errorMessage = $("#getQuoteError");
+        $errorMessage.html("");
         ticker = $(".get-quote input").val();
         if (ticker !== "") {
             // fetch quote
             let url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${ticker}&interval=60min&outputsize=compact&apikey=${apiKey}`;
             let $quote = $("<p>");
 
-
-
             // parse JSON
             $.getJSON(url)
                 .done(function (json) {
-                    if (typeof json !== 'undefined' && typeof json !== 'null' && !json["Error Message"]) {
-
-
-
+                    if (json !== undefined && typeof json !== 'null' && !json["Error Message"]) {
                         // find necessary quote
                         let key = json["Meta Data"]["3. Last Refreshed"];
                         quote = json["Time Series (60min)"][key]["4. close"];
@@ -37,114 +30,20 @@ function getQuotes() {
                         $quote.html(`The current price of ${ticker} is $${quote}`);
                         $(".render-quote").empty().append($quote);
 
+                        // update chart source
+                        let src = `https://s.tradingview.com/widgetembed/?symbol=${ticker}&amp;interval=D&amp;symboledit=1&amp;saveimage=1&amp;toolbarbg=f1f3f6&amp;studies=%5B%5D&amp;hideideas=1&amp;theme=Light&amp;style=1&amp;timezone=Etc%2FUTC&amp;studies_overrides=%7B%7D&amp;overrides=%7B%7D&amp;enabled_features=%5B%5D&amp;disabled_features=%5B%5D&amp;locale=en&amp;utm_source=localhost&amp;utm_medium=widget&amp;utm_campaign=chart&amp;utm_term=${ticker}`;
+                        $("iframe").attr("src", src);
                     }
                     else {
-                        alert(`${ticker} ticker symbol not found`);
+                        $errorMessage.html(`${ticker} ticker symbol not found`);
                     }
                 })
                 .fail(function () {
-                    alert(`Failed to fetch ${ticker} data`);
+                    $errorMessage.html(`Failed to fetch ${ticker} data`);
                 });
         } else {
-            alert("Please enter ticker symbol");
+            $errorMessage.html("Please enter ticker symbol");
         }
-    
-
-    }
-
-
-        function getData() {
-        ticker = $(".get-data input").val();
-        if (ticker !== "") {
-            // fetch quote
-
-            let url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${ticker}&interval=60min&outputsize=full&apikey=${apiKey}`;
-            let $quote = $("<p>");
-
-
-
-
-
-            // parse JSON
-            $.getJSON(url)
-                .done(function (json) {
-                    if (typeof json !== 'undefined' && typeof json !== 'null' && !json["Error Message"]) {
-
-
-
-                                        var dailySeries = { }; // create a new json object to hold the data
-                                        
-
-
-                                          var i = 0;
-
-                                          // This is a function to walk through a json object
-                                          function walk(obj) {
-                                            for (var key in obj) {
-                                              if (obj.hasOwnProperty(key)) {
-
-                                            
-
-                                                 var val = obj[key]; // the objects contents
-
-                                                 var newMember = key;  // use the date as the key for our new object
-
-
-                                              //    console.log(val);
-                                                dailySeries[newMember] = val; //  add a each object in the returned json to our dailySerious object
-                                        
-
-
- 
-
-                                                i++
-                                               // walk(val);   // recursive call
-                                              }
-                                            }
-                                          }
-
-
-                        
-
-
-                        // find necessary quote
-                      let key = json["Meta Data"]["3. Last Refreshed"];
-                      let date = key.substr(0,key.indexOf(' ')); // only the Day is used in this object, cut off the time
-                      let dailyQuote = json["Time Series (Daily)"][date];
-
-
-                                        walk(json["Time Series (Daily)"]);
-                                        console.log(dailySeries);
-                        
-
-
-
-
-                        // render quote
-                        $quote.html(`The current price of ${ticker} is $${quote}`);
-                        $(".render-data").empty().append($quote);
-
-                        console.log(key);
-                        console.log(date);
-                        console.log(dailyQuote);
-
-
-
-
-
-                    }
-                    else {
-                        alert(`${ticker} ticker symbol not found`);
-                    }
-                })
-                .fail(function () {
-                    alert(`Failed to fetch ${ticker} data`);
-                });
-        } else {
-            alert("Please enter ticker symbol");
-        }
-    
-
     }
 
     // implementation of buying / selling stocks
@@ -184,53 +83,69 @@ function getQuotes() {
 
     // helper function to store transaction into memory and update user's portfolio
     function storeTransaction() {
-        // check if there is a stock in the portfolio
-        let found = false;
-        let index;
-        portfolio.Stocks.forEach(function (item, i) {
-            if (item.Ticker === ticker) {
-                found = true;
-                index = i;
-            }
-        });
+        // pull user's portfolio
+        $.getJSON("portfolio.json")
+            .done(function (json) {
+                let size = json.length - 1;
+                let portfolio = json[size];
 
-        // append portfolio with 0 stocks if needed
-        if (!found) {
-            portfolio.Stocks.push(
-                {
-                    Ticker: ticker,
-                    Quantity: 0
-                }
-            );
-            index = portfolio.Stocks.length - 1;
-        }
-
-        // check if there is sufficient money / stock and update transactions and portfolio
-        if ((portfolio.Money + Number(dealSum)) >= 0) {
-            if ((portfolio.Stocks[index].Quantity + Number(quantity) >= 0)) {
-                transactions.push(
-                    {
-                        Number: trnumber,
-                        Type: $("input:checked").val(),
-                        Symbol: ticker,
-                        Quantity: quantity,
-                        Price: quote,
-                        Sum: dealSum
+                // check if there is a stock in the portfolio
+                let found = false;
+                let index;
+                portfolio.Stocks.forEach(function (item, i) {
+                    if (item.Ticker === ticker) {
+                        found = true;
+                        index = i;
                     }
-                );
-                portfolio.Money += Number(dealSum);
-                portfolio.Stocks[index].Quantity += Number(quantity);
-                return true;
-            }
-            else {
-                alert("Insufficient stocks");
-                return false;
-            }
-        }
-        else {
-            alert("Insufficient money");
-            return false;
-        }
+                });
+
+                // append portfolio with 0 stocks if needed
+                if (!found) {
+                    portfolio.Stocks.push(
+                        {
+                            "Ticker": ticker,
+                            "Quantity": 0
+                        }
+                    );
+                    index = portfolio.Stocks.length - 1;
+                }
+
+                // check if there is sufficient money / stock and update transactions and portfolio
+                if ((portfolio.Money + Number(dealSum)) >= 0) {
+                    if ((portfolio.Stocks[index].Quantity + Number(quantity) >= 0)) {
+                        transactions.push(
+                            {
+                                "Number": trnumber,
+                                "Type": $("input:checked").val(),
+                                "Symbol": ticker,
+                                "Quantity": quantity,
+                                "Price": quote,
+                                "Sum": dealSum
+                            }
+                        );
+                        portfolio.Money += Number(dealSum);
+                        portfolio.Stocks[index].Quantity += Number(quantity);
+
+                        // save new portfolio to the database
+                        $.post("/resources", portfolio, function (response) {
+                            console.log("server post response returned..." + response.toString());
+                        });
+
+                        return true;
+                    }
+                    else {
+                        alert("Insufficient stocks");
+                        return false;
+                    }
+                }
+                else {
+                    alert("Insufficient money");
+                    return false;
+                }
+            })
+            .fail(function () {
+                alert(`Failed to fetch user's portfolio`);
+            });
     }
 
     //handle user events
@@ -241,17 +156,6 @@ function getQuotes() {
     $(".get-quote input").on("keypress", function (e) {
         if (e.keyCode === 13) {
             getQuote();
-        }
-    });
-
-        //handle user events
-    $(".get-data button").on("click", function (e) {
-        getData();
-    });
-
-    $(".get-data input").on("keypress", function (e) {
-        if (e.keyCode === 13) {
-            getData();
         }
     });
 
