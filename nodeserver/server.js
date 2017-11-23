@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 // start the server
 app.use(express.static(__dirname + "/../src/"));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({extended: true}));
 http.createServer(app).listen(3030);
 
 // establish database connection
@@ -18,37 +18,47 @@ mongoose.connect('mongodb://localhost/stocktrading', {
     useMongoClient: true
 });
 
+// define mongoose schemas
 var stockSchema = new mongoose.Schema({
     "Ticker": String,
-    "Amount": Number
+    "Quantity": Number
 });
 
-var Stock = mongoose.model("Stock", stockSchema);
+var portfolioSchema = new mongoose.Schema({
+    "Money": Number,
+    "Stocks": [
+        stockSchema
+    ]
+});
 
+// define mongoose models
+var Stock = mongoose.model("Stock", stockSchema);
+var Portfolio = mongoose.model("Portfolio", portfolioSchema);
+
+// post endpoint
 app.post("/resources", function (req, res) {
-    var myData = new Stock({
-        "Ticker": req.body.Ticker,
-        "Amount": req.body.Amount
+    var myData = new Portfolio({
+        "Money": req.body.Money,
+        "Stocks": req.body.Stocks
     });
-    console.log(myData);
     myData.save(function (error, result) {
         if (error !== null) {
             console.log(error);
             res.send("error reported");
         } else {
-            console.log("item saved to database");
             res.send("item saved to database");
         }
     });
 });
 
-app.get("/stocks.json", function (req, res) {
-    Stock.find({}, function (error, stocks) {
-        res.json(stocks);
+// get endpoint
+app.get("/portfolio.json", function (req, res) {
+    Portfolio.find({}, function (error, portfolio) {
+        if (error !== null) {
+            console.log(error);
+            res.send("error reported");
+        } else {
+            res.json(portfolio);
+        }
     });
-});
-
-
-app.get("/", function (req, res) {
-    res.send("Hello World");
 });

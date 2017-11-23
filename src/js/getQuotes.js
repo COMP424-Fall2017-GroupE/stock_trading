@@ -8,24 +8,6 @@ function getQuotes() {
     let trnumber = 0;
     let transactions = [];
 
-    // let stock = {
-    //     "Ticker": "AAPL",
-    //     "Amount": 100
-    // }
-    //
-    // $.post("/resources", stock, function (response) {
-    //     console.log("server post response returned..." + response.toSource());
-    // });
-
-    $.getJSON("stocks.json")
-        .done(function (json) {
-            json.forEach(function (item) {
-                if (item !== null) {
-                    console.log(item);
-                }
-            })
-        });
-
     // implementation of fetching and rendering quotes, updating chart
     function getQuote() {
         ticker = $(".get-quote input").val();
@@ -99,53 +81,69 @@ function getQuotes() {
 
     // helper function to store transaction into memory and update user's portfolio
     function storeTransaction() {
-        // check if there is a stock in the portfolio
-        let found = false;
-        let index;
-        portfolio.Stocks.forEach(function (item, i) {
-            if (item.Ticker === ticker) {
-                found = true;
-                index = i;
-            }
-        });
+        // pull user's portfolio
+        $.getJSON("portfolio.json")
+            .done(function (json) {
+                let size = json.length - 1;
+                let portfolio = json[size];
 
-        // append portfolio with 0 stocks if needed
-        if (!found) {
-            portfolio.Stocks.push(
-                {
-                    "Ticker": ticker,
-                    "Quantity": 0
-                }
-            );
-            index = portfolio.Stocks.length - 1;
-        }
-
-        // check if there is sufficient money / stock and update transactions and portfolio
-        if ((portfolio.Money + Number(dealSum)) >= 0) {
-            if ((portfolio.Stocks[index].Quantity + Number(quantity) >= 0)) {
-                transactions.push(
-                    {
-                        "Number": trnumber,
-                        "Type": $("input:checked").val(),
-                        "Symbol": ticker,
-                        "Quantity": quantity,
-                        "Price": quote,
-                        "Sum": dealSum
+                // check if there is a stock in the portfolio
+                let found = false;
+                let index;
+                portfolio.Stocks.forEach(function (item, i) {
+                    if (item.Ticker === ticker) {
+                        found = true;
+                        index = i;
                     }
-                );
-                portfolio.Money += Number(dealSum);
-                portfolio.Stocks[index].Quantity += Number(quantity);
-                return true;
-            }
-            else {
-                alert("Insufficient stocks");
-                return false;
-            }
-        }
-        else {
-            alert("Insufficient money");
-            return false;
-        }
+                });
+
+                // append portfolio with 0 stocks if needed
+                if (!found) {
+                    portfolio.Stocks.push(
+                        {
+                            "Ticker": ticker,
+                            "Quantity": 0
+                        }
+                    );
+                    index = portfolio.Stocks.length - 1;
+                }
+
+                // check if there is sufficient money / stock and update transactions and portfolio
+                if ((portfolio.Money + Number(dealSum)) >= 0) {
+                    if ((portfolio.Stocks[index].Quantity + Number(quantity) >= 0)) {
+                        transactions.push(
+                            {
+                                "Number": trnumber,
+                                "Type": $("input:checked").val(),
+                                "Symbol": ticker,
+                                "Quantity": quantity,
+                                "Price": quote,
+                                "Sum": dealSum
+                            }
+                        );
+                        portfolio.Money += Number(dealSum);
+                        portfolio.Stocks[index].Quantity += Number(quantity);
+
+                        // save new portfolio to the database
+                        $.post("/resources", portfolio, function (response) {
+                            console.log("server post response returned..." + response.toString());
+                        });
+
+                        return true;
+                    }
+                    else {
+                        alert("Insufficient stocks");
+                        return false;
+                    }
+                }
+                else {
+                    alert("Insufficient money");
+                    return false;
+                }
+            })
+            .fail(function () {
+                alert(`Failed to fetch user's portfolio`);
+            });
     }
 
     //handle user events
@@ -160,14 +158,7 @@ function getQuotes() {
     });
 
     $(".trade button").on("click", function (e) {
-        //trade();
-        var portfolio = {
-            "Money": 10000,
-            "Stocks": []
-        };
-        $.post("/resources", portfolio, function (response) {
-            console.log("server post response returned..." + response);
-        });
+        trade();
     });
 
     $(".trade input[name='quantity']").on("keypress", function (e) {
