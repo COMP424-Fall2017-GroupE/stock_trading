@@ -7,12 +7,12 @@
     <meta name="description" content="This is the very beginning of a Stock Trading web application">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="manifest" href="../src/site.webmanifest">
-    <link rel="apple-touch-icon" href="../src/icon.png">
+    <link rel="manifest" href="src/site.webmanifest">
+    <link rel="apple-touch-icon" href="src/icon.png">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
     <!-- Place favicon.ico in the root directory -->
 
-    <link rel="stylesheet" href="../src/css/stockapp.css">
+    <link rel="stylesheet" href="/css/stockapp.css">
 </head>
 <body>
 <header>
@@ -28,7 +28,7 @@
 <main>
 
     <aside id="sidebar">
-        <section id="widget_1"><a>JR</a><img src="../src/img/grav.jpg" width="50" height="50"/></section>
+        <section id="widget_1"><a>JR</a><img src="img/grav.jpg" width="50" height="50"/></section>
         <section id="widget_2"><a>portfolios</a></section>
     </aside>
 
@@ -44,6 +44,7 @@
             <!-- ticker input article -->
             <article class="get-quote">
                 <h5>Type a ticker symbol to get a quote:</h5>
+                <div id="getQuoteError"></div>
                 <input type="text" name="ticker" title="ticker"><br>
                 <button>Get quote</button>
             </article>
@@ -78,7 +79,7 @@
                 <input type="radio" name="trade-type" value="buy"> Buy
                 <input type="radio" name="trade-type" value="sell"> Sell <br>
                 <input type="number" min="0" name="quantity"><br>
-                <button>Buy/Sell</button>
+                <button method="post" action="/resources">Buy/Sell</button>
             </article>
 
             <!-- history article -->
@@ -95,9 +96,9 @@
 <!--<script src="../src/js/vendor/modernizr-3.5.0.min.js"></script>-->
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"
         integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-<script>window.jQuery || document.write('<script src="../src/js/vendor/jquery-3.2.1.min.js"><\/script>')</script>
-<script src="../src/js/plugins.js"></script>
-<script src="../src/js/main.js"></script>
+<script>window.jQuery || document.write('<script src="js/vendor/jquery-3.2.1.min.js"><\/script>')</script>
+<script src="js/plugins.js"></script>
+<script src="js/main.js"></script>
 <script type="text/javascript" src="js/getQuotes.js"></script>
 
 
