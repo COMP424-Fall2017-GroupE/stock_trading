@@ -14,9 +14,12 @@ http.createServer(app).listen(3030);
 
 // var uri = "mongodb://afedorov:jwlupKsfzMXX6XNt@stocktrading-shard-00-00-reaq6.mongodb.net:27017,stocktrading-shard-00-01-reaq6.mongodb.net:27017,stocktrading-shard-00-02-reaq6.mongodb.net:27017/test?ssl=true&replicaSet=StockTrading-shard-0&authSource=admin";
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost/stocktrading', {
-    useMongoClient: true
-});
+mongoose.connect('mongodb://localhost/stocktrading', {useMongoClient: true})
+    .catch(function (connError) {
+        console.log(connError.name);
+        console.log(connError.message);
+        process.exit();
+    });
 
 // define mongoose schemas
 var stockSchema = new mongoose.Schema({
