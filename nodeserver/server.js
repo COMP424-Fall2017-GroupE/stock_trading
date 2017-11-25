@@ -35,12 +35,44 @@ var portfolioSchema = new mongoose.Schema({
     ]
 });
 
+var transactionSchema = new mongoose.Schema({
+    "UserID": Number,
+    "Number": Number,
+    "Type": String,
+    "Symbol": String,
+    "Quantity": Number,
+    "Price": Number,
+    "Sum": Number
+});
+
 // define mongoose models
 var Stock = mongoose.model("Stock", stockSchema);
 var Portfolio = mongoose.model("Portfolio", portfolioSchema);
+var Transaction = mongoose.model("Transaction", transactionSchema);
 
-// post endpoint
-app.post("/resources", function (req, res) {
+// post endpoint to save a transaction
+app.post("/transaction", function (req, res) {
+    var myData = new Transaction({
+        "UserID": req.body.UserID,
+        "Number": req.body.Number,
+        "Type": req.body.Type,
+        "Symbol": req.body.Symbol,
+        "Quantity": req.body.Quantity,
+        "Price": req.body.Price,
+        "Sum": req.body.Sum
+    });
+    myData.save(function (error, result) {
+        if (error !== null) {
+            console.log(error);
+            res.send("error reported");
+        } else {
+            res.send("transaction saved to database");
+        }
+    });
+});
+
+// post endpoint to save a portfolio
+app.post("/portfolio", function (req, res) {
     var myData = new Portfolio({
         "UserID": req.body.UserID,
         "Money": req.body.Money,
@@ -51,7 +83,7 @@ app.post("/resources", function (req, res) {
             console.log(error);
             res.send("error reported");
         } else {
-            res.send("item saved to database");
+            res.send("portfolio saved to database");
         }
     });
 });
