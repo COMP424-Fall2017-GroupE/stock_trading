@@ -7,12 +7,13 @@ function getQuotes() {
     let apiKey = "38HEIOY4TO9U5D4S";
     let trnumber = 0;
     let transactions = [];
+    let {portfolio} = {};
 
     // implementation of fetching and rendering quotes, updating chart
     function getQuote() {
         let $errorMessage = $("#getQuoteError");
         $errorMessage.html("");
-        ticker = $(".get-quote input").val();
+        ticker = $(".get-quote input").val().toUpperCase();
         if (ticker !== "") {
             // fetch quote
             let url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${ticker}&interval=60min&outputsize=compact&apikey=${apiKey}`;
@@ -81,71 +82,80 @@ function getQuotes() {
         }
     }
 
-    // helper function to store transaction into memory and update user's portfolio
+    // helper function to store transaction and update user's portfolio
     function storeTransaction() {
-        // pull user's portfolio
-        $.getJSON("portfolio.json")
-            .done(function (json) {
-                let size = json.length - 1;
-                let portfolio = json[size];
+        // create a promise for user's portfolio
+        getPortfolio().then(response => {
+            portfolio = response;
+            // check if there is a stock in the portfolio
+            let found = false;
+            let index;
+            portfolio.Stocks.forEach(function (item, i) {
+                if (item.Ticker === ticker) {
+                    found = true;
+                    index = i;
+                }
+            });
 
-                // check if there is a stock in the portfolio
-                let found = false;
-                let index;
-                portfolio.Stocks.forEach(function (item, i) {
-                    if (item.Ticker === ticker) {
-                        found = true;
-                        index = i;
+            // append portfolio with 0 stocks if needed
+            if (!found) {
+                portfolio.Stocks.push(
+                    {
+                        "Ticker": ticker,
+                        "Quantity": 0
                     }
-                });
+                );
+                index = portfolio.Stocks.length - 1;
+            }
 
-                // append portfolio with 0 stocks if needed
-                if (!found) {
-                    portfolio.Stocks.push(
+            // check if there is sufficient money / stock and update transactions and portfolio
+            if ((portfolio.Money + Number(dealSum)) >= 0) {
+                if ((portfolio.Stocks[index].Quantity + Number(quantity) >= 0)) {
+                    transactions.push(
                         {
-                            "Ticker": ticker,
-                            "Quantity": 0
+                            "Number": trnumber,
+                            "Type": $("input:checked").val(),
+                            "Symbol": ticker,
+                            "Quantity": quantity,
+                            "Price": quote,
+                            "Sum": dealSum
                         }
                     );
-                    index = portfolio.Stocks.length - 1;
-                }
+                    portfolio.Money += Number(dealSum);
+                    portfolio.Stocks[index].Quantity += Number(quantity);
 
-                // check if there is sufficient money / stock and update transactions and portfolio
-                if ((portfolio.Money + Number(dealSum)) >= 0) {
-                    if ((portfolio.Stocks[index].Quantity + Number(quantity) >= 0)) {
-                        transactions.push(
-                            {
-                                "Number": trnumber,
-                                "Type": $("input:checked").val(),
-                                "Symbol": ticker,
-                                "Quantity": quantity,
-                                "Price": quote,
-                                "Sum": dealSum
-                            }
-                        );
-                        portfolio.Money += Number(dealSum);
-                        portfolio.Stocks[index].Quantity += Number(quantity);
+                    // save new portfolio to the database
+                    $.post("/resources", portfolio, function (response) {
+                        console.log("server post response returned..." + response.toString());
+                    });
 
-                        // save new portfolio to the database
-                        $.post("/resources", portfolio, function (response) {
-                            console.log("server post response returned..." + response.toString());
-                        });
-
-                        return true;
-                    }
-                    else {
-                        alert("Insufficient stocks");
-                        return false;
-                    }
+                    return true;
                 }
                 else {
-                    alert("Insufficient money");
+                    alert("Insufficient stocks");
                     return false;
                 }
-            })
-            .fail(function () {
-                alert(`Failed to fetch user's portfolio`);
-            });
+            }
+            else {
+                alert("Insufficient money");
+                return false;
+            }
+        }, err => {
+            console.log("an error has been encountered..." + err.toString());
+        });
+    }
+
+    // helper function to fetch user's portfolio from the database
+    function getPortfolio() {
+        return new Promise((resolve, reject) => {
+            $.getJSON("portfolio.json")
+                .done(function (json) {
+                    resolve(json[json.length - 1]);
+                })
+                .fail(function () {
+                    reject(alert(`Failed to fetch user's portfolio`));
+                });
+        });
     }
 
     //handle user events

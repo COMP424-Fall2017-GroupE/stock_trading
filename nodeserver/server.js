@@ -28,6 +28,7 @@ var stockSchema = new mongoose.Schema({
 });
 
 var portfolioSchema = new mongoose.Schema({
+    "UserID": Number,
     "Money": Number,
     "Stocks": [
         stockSchema
@@ -41,6 +42,7 @@ var Portfolio = mongoose.model("Portfolio", portfolioSchema);
 // post endpoint
 app.post("/resources", function (req, res) {
     var myData = new Portfolio({
+        "UserID": req.body.UserID,
         "Money": req.body.Money,
         "Stocks": req.body.Stocks
     });
@@ -56,7 +58,7 @@ app.post("/resources", function (req, res) {
 
 // get endpoint
 app.get("/portfolio.json", function (req, res) {
-    Portfolio.find({}, function (error, portfolio) {
+    Portfolio.find({UserID: 1}, function (error, portfolio) {
         if (error !== null) {
             console.log(error);
             res.send("error reported");
