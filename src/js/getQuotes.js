@@ -161,7 +161,7 @@ function getQuotes() {
         return new Promise((resolve, reject) => {
             $.getJSON("portfolio.json")
                 .done(function (json) {
-                    resolve(json[json.length - 1]);
+                    resolve(json);
                 })
                 .fail(function () {
                     reject(alert(`Failed to fetch user's portfolio`));

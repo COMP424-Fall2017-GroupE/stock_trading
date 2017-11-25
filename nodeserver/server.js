@@ -71,26 +71,51 @@ app.post("/transaction", function (req, res) {
     });
 });
 
-// post endpoint to save a portfolio
+// post endpoint to update a portfolio
 app.post("/portfolio", function (req, res) {
-    var myData = new Portfolio({
-        "UserID": req.body.UserID,
-        "Money": req.body.Money,
-        "Stocks": req.body.Stocks
-    });
-    myData.save(function (error, result) {
-        if (error !== null) {
-            console.log(error);
-            res.send("error reported");
-        } else {
-            res.send("portfolio saved to database");
-        }
-    });
+    Portfolio.findOneAndUpdate(
+        {UserID: req.body.UserID},
+
+        {
+            $set: {
+                Money: req.body.Money,
+                Stocks: req.body.Stocks
+            }
+        },
+
+        {returnOriginal: false},
+
+        function (error, result) {
+            if (error !== null) {
+                console.log(error);
+                res.send("error reported");
+            } else {
+                res.send("portfolio successfully updated");
+            }
+        });
 });
+
+
+// // post endpoint to save a portfolio
+// app.post("/portfolio", function (req, res) {
+//     var myData = new Portfolio({
+//         "UserID": req.body.UserID,
+//         "Money": req.body.Money,
+//         "Stocks": req.body.Stocks
+//     });
+//     myData.save(function (error, result) {
+//         if (error !== null) {
+//             console.log(error);
+//             res.send("error reported");
+//         } else {
+//             res.send("portfolio saved to database");
+//         }
+//     });
+// });
 
 // get endpoint
 app.get("/portfolio.json", function (req, res) {
-    Portfolio.find({UserID: 1}, function (error, portfolio) {
+    Portfolio.findOne({UserID: 1}, function (error, portfolio) {
         if (error !== null) {
             console.log(error);
             res.send("error reported");
