@@ -8,6 +8,7 @@ function getQuotes() {
     let trnumber = 1;
     let {transaction} = {};
     let {portfolio} = {};
+    // change when user management is ready
     const userID = 1;
 
     // implementation of fetching and rendering quotes, updating chart
@@ -62,7 +63,7 @@ function getQuotes() {
                             $trade.html(`You bought ${quantity} ${ticker} stocks @ $${quote} and spent $${dealSum}`);
                             $(".history").append($trade);
                         }, error => {
-                            alert("an error while storing a transaction has been encountered: " + error);
+                            alert(`an error while storing a transaction has been encountered: ${error}`);
                         });
                         break;
 
@@ -74,7 +75,7 @@ function getQuotes() {
                             $trade.html(`You sold ${-quantity} ${ticker} stocks @ $${quote} and received $${dealSum}`);
                             $(".history").append($trade);
                         }, error => {
-                            alert("an error while storing a transaction has been encountered: " + error);
+                            alert(`an error while storing a transaction has been encountered: ${error}`);
                         });
                         break;
 
@@ -135,11 +136,11 @@ function getQuotes() {
 
                         // save new transaction to the database
                         $.post("/transaction", transaction, function (response) {
-                            console.log("server post response returned..." + response.toString());
+                            console.log(`server post response returned... ${response.toString()}`);
                         });
                         // save new portfolio to the database
                         $.post("/portfolio", portfolio, function (response) {
-                            console.log("server post response returned..." + response.toString());
+                            console.log(`server post response returned... ${response.toString()}`);
                         });
                         resolve();
                     }
@@ -151,7 +152,7 @@ function getQuotes() {
                     reject("Insufficient money");
                 }
             }, error => {
-                reject("unable to get user portfolio" + error.toString());
+                reject(`Unable to get user portfolio: ${error.toString()}`);
             });
         });
     }
