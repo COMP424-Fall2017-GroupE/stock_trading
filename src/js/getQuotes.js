@@ -201,16 +201,20 @@ function getQuotes() {
             $("#portfolio tbody").append($tr);
 
             portfolio.Stocks.forEach(function (item, i) {
-                $tr = $("<tr>");
-                $td = [];
-                $td.push($("<td>").html(item.Ticker));
-                $td.push($("<td>").html(item.Quantity));
-                $td.push($("<td>").html("-"));
-                $td.push($("<td>").html("-"));
-                $td.forEach(function (item) {
-                    $tr.append(item);
+                fetchQuote(item.Ticker).then(response => {
+                    $tr = $("<tr>");
+                    $td = [];
+                    $td.push($("<td>").html(item.Ticker));
+                    $td.push($("<td>").html(item.Quantity));
+                    $td.push($("<td>").html(response));
+                    $td.push($("<td>").html((item.Quantity * response).toFixed(2)));
+                    $td.forEach(function (item) {
+                        $tr.append(item);
+                    });
+                    $("#portfolio tbody").append($tr);
+                }, error => {
+                    reject(error);
                 });
-                $("#portfolio tbody").append($tr);
             });
             resolve();
         });
