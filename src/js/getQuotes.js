@@ -22,36 +22,44 @@ function getQuotes() {
         ticker = $(".get-quote input").val().toUpperCase();
         if (ticker !== "") {
             // fetch quote
-            let url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${ticker}&interval=60min&outputsize=compact&apikey=${apiKey}`;
-            let $quote = $("<p>");
+            fetchQuote(ticker).then(response => {
+                quote = response;
+                let $quote = $("<p>");
+                // render quote
+                $quote.html(`The current price of ${ticker} is $${quote}`);
+                $(".render-quote").empty().append($quote);
 
+                // update chart source
+                let src = `https://s.tradingview.com/widgetembed/?symbol=${ticker}&amp;interval=D&amp;symboledit=1&amp;saveimage=1&amp;toolbarbg=f1f3f6&amp;studies=%5B%5D&amp;hideideas=1&amp;theme=Light&amp;style=1&amp;timezone=Etc%2FUTC&amp;studies_overrides=%7B%7D&amp;overrides=%7B%7D&amp;enabled_features=%5B%5D&amp;disabled_features=%5B%5D&amp;locale=en&amp;utm_source=localhost&amp;utm_medium=widget&amp;utm_campaign=chart&amp;utm_term=${ticker}`;
+                $("iframe").attr("src", src);
+            }, error => {
+                $errorMessage.html(error);
+            });
+        } else {
+            $errorMessage.html("Please enter ticker symbol");
+        }
+    }
+
+    function fetchQuote(ticker) {
+        return new Promise((resolve, reject) => {
+            let url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${ticker}&interval=60min&outputsize=compact&apikey=${apiKey}`;
             // parse JSON
             $.getJSON(url)
                 .done(function (json) {
                     if (typeof json !== 'undefined' && typeof json !== 'null' && !json["Error Message"]) {
                         // find necessary quote
                         let key = json["Meta Data"]["3. Last Refreshed"];
-                        quote = Number(json["Time Series (60min)"][key]["4. close"]);
-                        quote.toFixed(2);
-
-                        // render quote
-                        $quote.html(`The current price of ${ticker} is $${quote}`);
-                        $(".render-quote").empty().append($quote);
-
-                        // update chart source
-                        let src = `https://s.tradingview.com/widgetembed/?symbol=${ticker}&amp;interval=D&amp;symboledit=1&amp;saveimage=1&amp;toolbarbg=f1f3f6&amp;studies=%5B%5D&amp;hideideas=1&amp;theme=Light&amp;style=1&amp;timezone=Etc%2FUTC&amp;studies_overrides=%7B%7D&amp;overrides=%7B%7D&amp;enabled_features=%5B%5D&amp;disabled_features=%5B%5D&amp;locale=en&amp;utm_source=localhost&amp;utm_medium=widget&amp;utm_campaign=chart&amp;utm_term=${ticker}`;
-                        $("iframe").attr("src", src);
+                        let quote = Number(json["Time Series (60min)"][key]["4. close"]);
+                        resolve(quote.toFixed(2));
                     }
                     else {
-                        $errorMessage.html(`${ticker} ticker symbol not found`);
+                        reject(`${ticker} ticker symbol not found`);
                     }
                 })
                 .fail(function () {
-                    $errorMessage.html(`Failed to fetch ${ticker} data`);
+                    reject(`Failed to fetch ${ticker} data`);
                 });
-        } else {
-            $errorMessage.html("Please enter ticker symbol");
-        }
+        });
     }
 
     // implementation of buying / selling stocks
