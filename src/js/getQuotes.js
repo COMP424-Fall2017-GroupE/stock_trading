@@ -27,7 +27,8 @@ function getQuotes() {
                     if (typeof json !== 'undefined' && typeof json !== 'null' && !json["Error Message"]) {
                         // find necessary quote
                         let key = json["Meta Data"]["3. Last Refreshed"];
-                        quote = json["Time Series (60min)"][key]["4. close"];
+                        quote = Number(json["Time Series (60min)"][key]["4. close"]);
+                        quote.toFixed(2);
 
                         // render quote
                         $quote.html(`The current price of ${ticker} is $${quote}`);
@@ -177,7 +178,7 @@ function getQuotes() {
             $td.push($("<td>").html(date));
             $td.push($("<td>").html(transaction.Type));
             $td.push($("<td>").html(transaction.Symbol));
-            $td.push($("<td>").html(transaction.Quantity));
+            $td.push($("<td>").html(Math.abs(transaction.Quantity)));
             $td.push($("<td>").html(transaction.Price));
             $td.push($("<td>").html(transaction.Sum));
 
