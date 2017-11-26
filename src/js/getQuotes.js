@@ -11,6 +11,10 @@ function getQuotes() {
     // change when user management is ready
     const userID = 1;
 
+    getPortfolio().then(response => {
+        displayPortfolio(response);
+    });
+
     // implementation of fetching and rendering quotes, updating chart
     function getQuote() {
         let $errorMessage = $("#getQuoteError");
@@ -141,6 +145,8 @@ function getQuotes() {
                         $.post("/portfolio", portfolio, function (response) {
                             console.log(`server post response returned... ${response.toString()}`);
                         });
+                        // update UI
+                        displayPortfolio(portfolio);
                         resolve();
                     }
                     else {
@@ -169,7 +175,40 @@ function getQuotes() {
         });
     }
 
-    // transactions history
+    // display user's portfolio
+    function displayPortfolio(portfolio) {
+        return new Promise((resolve, reject) => {
+            $("#portfolio tbody").empty();
+
+            let $tr = $("<tr>");
+            let $td = [];
+            $td.push($("<td>").html("Money"));
+            $td.push($("<td>").html(portfolio.Money.toFixed(2)));
+            $td.push($("<td>").html("-"));
+            $td.push($("<td>").html(portfolio.Money.toFixed(2)));
+            $td.forEach(function (item) {
+                $tr.append(item);
+            });
+
+            $("#portfolio tbody").append($tr);
+
+            portfolio.Stocks.forEach(function (item, i) {
+                $tr = $("<tr>");
+                $td = [];
+                $td.push($("<td>").html(item.Ticker));
+                $td.push($("<td>").html(item.Quantity));
+                $td.push($("<td>").html("-"));
+                $td.push($("<td>").html("-"));
+                $td.forEach(function (item) {
+                    $tr.append(item);
+                });
+                $("#portfolio tbody").append($tr);
+            });
+            resolve();
+        });
+    }
+
+    // display transactions history
     function appendHistory() {
         let $tr = $("<tr>");
         let $td = [];
