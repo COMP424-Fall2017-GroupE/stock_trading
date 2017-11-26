@@ -37,6 +37,7 @@ var portfolioSchema = new mongoose.Schema({
 
 var transactionSchema = new mongoose.Schema({
     "UserID": Number,
+    "Date": Date,
     "Number": Number,
     "Type": String,
     "Symbol": String,
@@ -54,6 +55,7 @@ var Transaction = mongoose.model("Transaction", transactionSchema);
 app.post("/transaction", function (req, res) {
     var myData = new Transaction({
         "UserID": req.body.UserID,
+        "Date": req.body.Date,
         "Number": req.body.Number,
         "Type": req.body.Type,
         "Symbol": req.body.Symbol,

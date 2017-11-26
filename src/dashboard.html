@@ -76,14 +76,31 @@
             <!-- trade article -->
             <article class="trade">
                 <h5>Select Buy or Sell and enter quantity:</h5>
-                <input type="radio" name="trade-type" value="buy"> Buy
-                <input type="radio" name="trade-type" value="sell"> Sell <br>
+                <input type="radio" name="trade-type" value="Buy"> Buy
+                <input type="radio" name="trade-type" value="Sell"> Sell <br>
                 <input type="number" min="0" name="quantity"><br>
                 <button method="post" action="/resources">Buy/Sell</button>
             </article>
 
             <!-- history article -->
-            <article class="history"></article>
+            <article class="history">
+                <h4>Transactions history:</h4>
+                <table id="transactionsHistory">
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Symbol</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Sum</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- updated by javascript -->
+                    </tbody>
+                </table>
+            </article>
     </section>
 
 </main>

@@ -54,26 +54,23 @@ function getQuotes() {
         quantity = $(".trade input[name='quantity']").val();
         if (Number(quote) > 0) {
             if (Number(quantity) > 0) {
-                let $trade = $("<p>");
                 switch ($("input:checked").val()) {
-                    case "buy":
+                    case "Buy":
                         dealSum = (-quantity * quote).toFixed(2);
                         storeTransaction().then(response => {
                             trnumber++;
-                            $trade.html(`You bought ${quantity} ${ticker} stocks @ $${quote} and spent $${dealSum}`);
-                            $(".history").append($trade);
+                            appendHistory();
                         }, error => {
                             alert(`an error while storing a transaction has been encountered: ${error}`);
                         });
                         break;
 
-                    case "sell":
+                    case "Sell":
                         dealSum = (quantity * quote).toFixed(2);
                         quantity = -quantity;
                         storeTransaction().then(response => {
                             trnumber++;
-                            $trade.html(`You sold ${-quantity} ${ticker} stocks @ $${quote} and received $${dealSum}`);
-                            $(".history").append($trade);
+                            appendHistory();
                         }, error => {
                             alert(`an error while storing a transaction has been encountered: ${error}`);
                         });
@@ -124,6 +121,7 @@ function getQuotes() {
                         transaction =
                             {
                                 "UserID": userID,
+                                "Date": new Date(),
                                 "Number": trnumber,
                                 "Type": $("input:checked").val(),
                                 "Symbol": ticker,
@@ -169,6 +167,27 @@ function getQuotes() {
                 });
         });
     }
+
+    // transactions history
+    function appendHistory() {
+        let $tr = $("<tr>");
+        let $td = [];
+        if (transaction !== {}) {
+            $td.push($("<td>").html(transaction.Date));
+            $td.push($("<td>").html(transaction.Type));
+            $td.push($("<td>").html(transaction.Symbol));
+            $td.push($("<td>").html(transaction.Quantity));
+            $td.push($("<td>").html(transaction.Price));
+            $td.push($("<td>").html(transaction.Sum));
+
+            $td.forEach(function (item) {
+                $tr.append(item);
+            });
+
+            $("#transactionsHistory tbody").append($tr);
+        }
+    }
+
 
     //handle user events
     $(".get-quote button").on("click", function (e) {
