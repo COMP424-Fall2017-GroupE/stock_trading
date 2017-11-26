@@ -8,6 +8,16 @@
    Base styles: opinionated defaults
    ========================================================================== */
 
+.spinner {
+    position: absolute;
+    height: 100px;
+    width: 100px;
+    top: 50%;
+    left: 50%;
+    margin-left: -50px;
+    margin-top: -50px;
+}
+
 html {
     color: #222;
     font-size: 1em;

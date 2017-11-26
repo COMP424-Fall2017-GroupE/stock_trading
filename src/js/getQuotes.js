@@ -10,9 +10,12 @@ function getQuotes() {
     let {portfolio} = {};
     // change when user management is ready
     const userID = 1;
+    const spinner = $(".spinner img");
 
     getPortfolio().then(response => {
-        displayPortfolio(response);
+        displayPortfolio(response).then(response => {
+            spinner.hide();
+        });
     });
 
     // implementation of fetching and rendering quotes, updating chart
@@ -41,6 +44,7 @@ function getQuotes() {
     }
 
     function fetchQuote(ticker) {
+        spinner.show();
         return new Promise((resolve, reject) => {
             let url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${ticker}&interval=60min&outputsize=compact&apikey=${apiKey}`;
             // parse JSON
@@ -50,13 +54,16 @@ function getQuotes() {
                         // find necessary quote
                         let key = json["Meta Data"]["3. Last Refreshed"];
                         let quote = Number(json["Time Series (60min)"][key]["4. close"]);
+                        spinner.hide();
                         resolve(quote.toFixed(2));
                     }
                     else {
+                        spinner.hide();
                         reject(`${ticker} ticker symbol not found`);
                     }
                 })
                 .fail(function () {
+                    spinner.hide();
                     reject(`Failed to fetch ${ticker} data`);
                 });
         });
@@ -172,12 +179,15 @@ function getQuotes() {
 
     // helper function to fetch user's portfolio from the database
     function getPortfolio() {
+        spinner.show();
         return new Promise((resolve, reject) => {
             $.getJSON("portfolio.json")
                 .done(function (json) {
+                    spinner.hide();
                     resolve(json);
                 })
                 .fail(function () {
+                    spinner.hide();
                     reject(alert(`Failed to fetch user's portfolio`));
                 });
         });
