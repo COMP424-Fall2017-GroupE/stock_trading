@@ -173,7 +173,8 @@ function getQuotes() {
         let $tr = $("<tr>");
         let $td = [];
         if (transaction !== {}) {
-            $td.push($("<td>").html(transaction.Date));
+            let date = `${transaction.Date.getMonth()}/${transaction.Date.getDate()}/${transaction.Date.getFullYear()}`;
+            $td.push($("<td>").html(date));
             $td.push($("<td>").html(transaction.Type));
             $td.push($("<td>").html(transaction.Symbol));
             $td.push($("<td>").html(transaction.Quantity));
