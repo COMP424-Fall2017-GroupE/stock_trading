@@ -72,7 +72,7 @@ function getQuotes() {
 
     // implementation of buying / selling stocks
     function trade() {
-        quantity = $(".trade input[name='quantity']").val();
+        quantity = $(".get-quote input[name='quantity']").val();
         if (Number(quote) > 0) {
             if (Number(quantity) > 0) {
                 switch ($("input:checked").val()) {
