@@ -11,6 +11,9 @@ function getQuotes() {
     // change when user management is ready
     const userID = 1;
     const spinner = $(".spinner img");
+    const chart = $(".chart");
+
+    chart.hide();
 
     getPortfolio().then(response => {
         displayPortfolio(response).then(response => {
@@ -20,26 +23,24 @@ function getQuotes() {
 
     // implementation of fetching and rendering quotes, updating chart
     function getQuote() {
-        let $errorMessage = $("#getQuoteError");
-        $errorMessage.html("");
         ticker = $(".get-quote input").val().toUpperCase();
+        let $quote = $("<p>");
         if (ticker !== "") {
             // fetch quote
             fetchQuote(ticker).then(response => {
                 quote = response;
-                let $quote = $("<p>");
                 // render quote
-                $quote.html(`The current price of ${ticker} is $${quote}`);
-                $(".render-quote").empty().append($quote);
+                $(".render-quote").empty().append($quote.html(`The current price of ${ticker} is $${quote}`));
 
                 // update chart source
                 let src = `https://s.tradingview.com/widgetembed/?symbol=${ticker}&amp;interval=D&amp;symboledit=1&amp;saveimage=1&amp;toolbarbg=f1f3f6&amp;studies=%5B%5D&amp;hideideas=1&amp;theme=Light&amp;style=1&amp;timezone=Etc%2FUTC&amp;studies_overrides=%7B%7D&amp;overrides=%7B%7D&amp;enabled_features=%5B%5D&amp;disabled_features=%5B%5D&amp;locale=en&amp;utm_source=localhost&amp;utm_medium=widget&amp;utm_campaign=chart&amp;utm_term=${ticker}`;
                 $("iframe").attr("src", src);
+                chart.show();
             }, error => {
-                $errorMessage.html(error);
+                $(".render-quote").empty().append($quote.html(error));
             });
         } else {
-            $errorMessage.html("Please enter ticker symbol");
+            $(".render-quote").empty().append($quote.html("Please enter ticker symbol"));
         }
     }
 
@@ -257,21 +258,21 @@ function getQuotes() {
 
 
     //handle user events
-    $(".get-quote button").on("click", function (e) {
+    $(".get-quote button[name='get-quote-btn']").on("click", function (e) {
         getQuote();
     });
 
-    $(".get-quote input").on("keypress", function (e) {
+    $(".get-quote input[name='ticker']").on("keypress", function (e) {
         if (e.keyCode === 13) {
             getQuote();
         }
     });
 
-    $(".trade button").on("click", function (e) {
+    $(".get-quote button[name='trade-btn']").on("click", function (e) {
         trade();
     });
 
-    $(".trade input[name='quantity']").on("keypress", function (e) {
+    $(".get-quote input[name='quantity']").on("keypress", function (e) {
         if (e.keyCode === 13) {
             trade();
         }
