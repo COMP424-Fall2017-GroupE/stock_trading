@@ -103,6 +103,22 @@ function fetchQuote(ticker) {
     });
 }
 
+// helper function to fetch user's portfolio from the database
+function getTransactions(userID) {
+    spinner.show();
+    return new Promise((resolve, reject) => {
+        $.getJSON("transactions.json", userID)
+            .done(function (json) {
+                spinner.hide();
+                resolve(json);
+            })
+            .fail(function () {
+                spinner.hide();
+                reject(alert(`Failed to fetch user's transactions`));
+            });
+    });
+}
+
 // helper function to store transaction and update user's portfolio
 function storeTransaction(userID, ticker, quantity, quote, trnumber) {
     let dealSum = -(quantity * quote).toFixed(2);
@@ -138,19 +154,21 @@ function storeTransaction(userID, ticker, quantity, quote, trnumber) {
                     let transaction =
                         {
                             "UserID": userID,
-                            "Date": new Date(),
-                            "Number": trnumber,
-                            "Type": $("input:checked").val(),
-                            "Symbol": ticker,
-                            "Quantity": quantity,
-                            "Price": quote,
-                            "Sum": dealSum
+                            "Transaction": {
+                                "Date": new Date(),
+                                "Number": trnumber,
+                                "Type": $("input:checked").val(),
+                                "Symbol": ticker,
+                                "Quantity": quantity,
+                                "Price": quote,
+                                "Sum": dealSum
+                            }
                         };
                     portfolio.Money += Number(dealSum);
                     portfolio.Stocks[index].Quantity += Number(quantity);
 
                     // save new transaction to the database
-                    $.post("/transaction", transaction, function (response) {
+                    $.post("/transactionListUpdate", transaction, function (response) {
                         console.log(`server post response returned... ${response.toString()}`);
                     });
                     // save new portfolio to the database
@@ -159,7 +177,7 @@ function storeTransaction(userID, ticker, quantity, quote, trnumber) {
                     });
                     // update UI
                     displayPortfolio(portfolio);
-                    resolve(transaction);
+                    resolve(transaction.Transaction);
                 }
                 else {
                     reject("Insufficient stocks");
