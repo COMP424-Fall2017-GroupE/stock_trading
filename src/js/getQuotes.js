@@ -198,10 +198,6 @@ function appendHistory(transaction) {
 function getQuotes() {
     let ticker;
     let quote;
-    let quantity;
-    let dealSum;
-    let trnumber = 1;
-    let {transaction} = {};
 
     // implementation of fetching and rendering quotes, updating chart
     function getQuote() {
@@ -228,35 +224,28 @@ function getQuotes() {
 
     // implementation of buying / selling stocks
     function trade() {
-        quantity = $(".get-quote input[name='quantity']").val();
+        let quantity = $(".get-quote input[name='quantity']").val();
+        let trnumber = 1;
         if (Number(quote) > 0) {
             if (Number(quantity) > 0) {
                 switch ($("input:checked").val()) {
                     case "Buy":
-                        dealSum = (-quantity * quote).toFixed(2);
-                        storeTransaction(userID, ticker, quantity, quote, trnumber).then(response => {
-                            trnumber++;
-                            appendHistory(response);
-                        }, error => {
-                            alert(`an error while storing a transaction has been encountered: ${error}`);
-                        });
                         break;
 
                     case "Sell":
-                        dealSum = (quantity * quote).toFixed(2);
                         quantity = -quantity;
-                        storeTransaction(userID, ticker, quantity, quote, trnumber).then(response => {
-                            trnumber++;
-                            appendHistory(response);
-                        }, error => {
-                            alert(`an error while storing a transaction has been encountered: ${error}`);
-                        });
                         break;
 
                     default:
                         alert("Please select an option");
                         break;
                 }
+                storeTransaction(userID, ticker, quantity, quote, trnumber).then(response => {
+                    trnumber++;
+                    appendHistory(response);
+                }, error => {
+                    alert(`an error while storing a transaction has been encountered: ${error}`);
+                });
             } else {
                 alert("Please enter quantity which is greater than 0");
             }
