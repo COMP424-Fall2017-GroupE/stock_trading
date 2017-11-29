@@ -105,7 +105,7 @@ function fetchQuote(ticker) {
     });
 }
 
-// helper function to fetch user's portfolio from the database
+// helper function to fetch user's transactions from the database
 function getTransactions(userID) {
     spinner.show();
     return new Promise((resolve, reject) => {
