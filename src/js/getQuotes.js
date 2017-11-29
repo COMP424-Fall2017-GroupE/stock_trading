@@ -44,6 +44,240 @@ function getQuotes() {
         }
     }
 
+
+
+
+
+
+
+
+
+
+
+
+               function getData() {
+        ticker = $(".get-data input").val();
+        if (ticker !== "") {
+            // fetch quote
+
+            let url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${ticker}&interval=60min&outputsize=compact&apikey=${apiKey}`;
+            let $quote = $("<p>");
+
+
+
+
+
+            // parse JSON
+            $.getJSON(url)
+                .done(function (json) {
+                    if (typeof json !== 'undefined' && typeof json !== 'null' && !json["Error Message"]) {
+
+
+
+                                        var dailySeries = []; // create a new json object to hold the data
+                                        
+
+
+
+
+
+                                          // This is a function to walk through a json object
+                                          function walk(obj) {
+
+                                          var i = 0;
+
+
+                                            for (var key in obj) {
+                                              if (obj.hasOwnProperty(key)) {
+
+
+                               //                   console.log(key);                                            
+
+                                                 var val = obj[key]; // the objects contents
+
+                                                 var volume = obj[key]["5. volume"]; // the objects volume
+
+                                                 var dateString = key;  // to add the date as a string to the new object
+
+                                                 var newMember = i;  // call each day a member of our daily series
+
+                               //                   console.log(val);
+                               //                 dailySeries[newMember] = val; //  add the data with date as key
+                                                dailySeries[newMember] = { key } ; //  add the data with a number as key
+                                                dailySeries[newMember].dateString = key; // add a dateString property and set the value to the date
+                                                dailySeries[newMember].volume = volume; // add a volue property
+
+                                                i++; // increment the index
+
+                                              // walk(val);   // recursive call
+                                              }
+                                            }
+
+
+draw(dailySeries);
+
+                                          }
+
+
+
+
+
+
+
+
+
+
+
+
+                        
+
+
+                        // find necessary quote
+                      let key = json["Meta Data"]["3. Last Refreshed"];
+                      let date = key.substr(0,key.indexOf(' ')); // only the Day is used in this object, cut off the time
+                      let dailyQuote = json["Time Series (Daily)"][date];
+
+
+                                        walk(json["Time Series (Daily)"]);
+                                        console.log(dailySeries);
+
+                                      //  draw(dailySeries);
+// dataset1[0].video_views
+
+
+ function draw(obj) {
+
+var i = 0;
+
+     for (var dataMember in obj) {
+
+   //   console.log(dataMember + " " + dataMember[key]);
+
+
+
+
+      console.log(i + "   " + dailySeries[i].volume + "    " + dailySeries[i].dateString);
+      i++;
+
+
+
+
+
+
+
+
+    }
+
+    
+
+var data = dailySeries;
+
+// function (d) {
+// return (d.width);
+// }
+
+// checkd3(dailySeries);
+
+
+ //set title
+d3.select('#test-container').append('h5').text('Basic - add text');
+//page elements - add a 'p' element and text
+d3.select('#test-container').append('p').text('some sample text...');
+    
+//sample D3 array
+var data = dailySeries;
+
+
+    
+ //set title
+d3.select('#test-container2').append('h5').text('Basic - add element'); 
+//create a 'p' element for each value in the array
+d3.select('#test-container2').selectAll('p').data(data).enter().append('p').text('p element...');
+
+ //set title
+d3.select('#test-container3').append('h5').text('Basic - add array value to element (with colour)');    
+//output array value instead of dummy text
+d3.select('#test-container3').selectAll('p').data(data).enter().append('p').text(function(d) { return d.volume; });
+
+ //set title
+d3.select('#test-container4').append('h5').text('Basic - add key & value to element');  
+//output array value instead of dummy text
+d3.select('#test-container4').selectAll('p').data(data).enter().append('p').text(function(d, i) { return 'key = '+ i + ', value = ' + d.volume; });
+    
+//bind css style to elements
+d3.select('#test-container3').selectAll('p').style('color', 'blue');
+    
+//bind css style to even or numbers from array
+d3.select('#test-container3').selectAll('p')
+    .data(data)
+    .style('color', function(d) {
+        if (d.volume % 2 == 0) {
+            return 'green';
+        } else {
+            return 'blue';
+        }
+    });
+
+
+
+  
+}
+
+
+
+
+
+
+
+
+                        quote = dailySeries[0].volume;
+                        // render quote
+                        $quote.html(` ${ticker} Historical Stock Information  volume is ${quote}`);
+                        $(".render-data").empty().append($quote);
+
+                        console.log(key);
+                        console.log(date);
+                        console.log(dailyQuote);
+
+
+
+
+
+                    }
+                    else {
+                        alert(`${ticker} ticker symbol not found`);
+                    }
+                })
+                .fail(function () {
+                    alert(`Failed to fetch ${ticker} data`);
+                });
+        } else {
+            alert("Please enter ticker symbol");
+        }
+    
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     function fetchQuote(ticker) {
         spinner.show();
         return new Promise((resolve, reject) => {
@@ -277,6 +511,18 @@ function getQuotes() {
             trade();
         }
     });
+
+        $(".get-data button").on("click", function (e) {
+        getData();
+    });
+
+    $(".get-data input").on("keypress", function (e) {
+        if (e.keyCode === 13) {
+            getData();
+        }
+    });
+
+
 }
 
 $(document).ready(getQuotes);
