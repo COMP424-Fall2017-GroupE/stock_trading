@@ -86,23 +86,23 @@ app.post("/transactionListUpdate", function (req, res) {
 });
 
 // post endpoint to save an initial transaction list
-// app.post("/transactionList", function (req, res) {
-//     var myData = new TransactionList({
-//         "UserID": req.body.UserID,
-//         "Transactions": req.body.Transactions
-//     });
-//     myData.save(function (error, result) {
-//         if (error !== null) {
-//             console.log(error);
-//             res.send("error reported");
-//         } else {
-//             res.send("transaction list saved to database");
-//         }
-//     });
-// });
+app.post("/transactionList", function (req, res) {
+    var myData = new TransactionList({
+        "UserID": req.body.UserID,
+        "Transactions": req.body.Transactions
+    });
+    myData.save(function (error, result) {
+        if (error !== null) {
+            console.log(error);
+            res.send("error reported");
+        } else {
+            res.send("transaction list saved to database");
+        }
+    });
+});
 
 // post endpoint to update a portfolio
-app.post("/portfolio", function (req, res) {
+app.post("/portfolioUpdate", function (req, res) {
     Portfolio.findOneAndUpdate(
         {UserID: req.body.UserID},
 
@@ -126,31 +126,43 @@ app.post("/portfolio", function (req, res) {
 });
 
 
-// // post endpoint to save a portfolio
-// app.post("/portfolio", function (req, res) {
-//     var myData = new Portfolio({
-//         "UserID": req.body.UserID,
-//         "Money": req.body.Money,
-//         "Stocks": req.body.Stocks
-//     });
-//     myData.save(function (error, result) {
-//         if (error !== null) {
-//             console.log(error);
-//             res.send("error reported");
-//         } else {
-//             res.send("portfolio saved to database");
-//         }
-//     });
-// });
+// post endpoint to save a new portfolio
+app.post("/portfolio", function (req, res) {
+    var myData = new Portfolio({
+        "UserID": req.body.UserID,
+        "Money": req.body.Money,
+        "Stocks": req.body.Stocks
+    });
+    myData.save(function (error, result) {
+        if (error !== null) {
+            console.log(error);
+            res.send("error reported");
+        } else {
+            res.send("portfolio saved to database");
+        }
+    });
+});
 
-// get endpoint
+// get endpoint to get a portfolio from the database
 app.get("/portfolio.json", function (req, res) {
-    Portfolio.findOne({UserID: 1}, function (error, portfolio) {
+    Portfolio.findOne({UserID: req.query.UserID}, function (error, portfolio) {
         if (error !== null) {
             console.log(error);
             res.send("error reported");
         } else {
             res.json(portfolio);
+        }
+    });
+});
+
+// get endpoint to get a list of transactions from the database
+app.get("/transactions.json", function (req, res) {
+    TransactionList.findOne({UserID: req.query.UserID}, function (error, transactions) {
+        if (error !== null) {
+            console.log(error);
+            res.send("error reported");
+        } else {
+            res.json(transactions.Transactions);
         }
     });
 });
