@@ -1,6 +1,6 @@
 "use strict";
 // change when user management is ready
-const userID = 1;
+const currentUserID = 1;
 const spinner = $(".spinner img");
 const chart = $(".chart");
 const apiKey = "38HEIOY4TO9U5D4S";
@@ -9,18 +9,20 @@ const apiKey = "38HEIOY4TO9U5D4S";
 function mainPageLoad() {
     chart.hide();
 
-    getPortfolio().then(response => {
+    getPortfolio(currentUserID).then(response => {
         displayPortfolio(response).then(function () {
-            getQuotes();
+            getTransactions(currentUserID).then(response => {
+                getQuotes(response.length);
+            });
         });
     });
 }
 
 // helper function to fetch user's portfolio from the database
-function getPortfolio() {
+function getPortfolio(userID) {
     spinner.show();
     return new Promise((resolve, reject) => {
-        $.getJSON("portfolio.json")
+        $.getJSON("portfolio.json", {UserID: userID})
             .done(function (json) {
                 spinner.hide();
                 resolve(json);
@@ -107,7 +109,7 @@ function fetchQuote(ticker) {
 function getTransactions(userID) {
     spinner.show();
     return new Promise((resolve, reject) => {
-        $.getJSON("transactions.json", userID)
+        $.getJSON("transactions.json", {UserID: userID})
             .done(function (json) {
                 spinner.hide();
                 resolve(json);
@@ -125,7 +127,7 @@ function storeTransaction(userID, ticker, quantity, quote, trnumber) {
     return new Promise((resolve, reject) => {
         // create a promise for user's portfolio
         let {portfolio} = {};
-        getPortfolio().then(response => {
+        getPortfolio(currentUserID).then(response => {
             portfolio = response;
             // check if there is a stock in the portfolio
             let found = false;
@@ -167,12 +169,12 @@ function storeTransaction(userID, ticker, quantity, quote, trnumber) {
                     portfolio.Money += Number(dealSum);
                     portfolio.Stocks[index].Quantity += Number(quantity);
 
-                    // save new transaction to the database
+                    // update transactions list in the database
                     $.post("/transactionListUpdate", transaction, function (response) {
                         console.log(`server post response returned... ${response.toString()}`);
                     });
-                    // save new portfolio to the database
-                    $.post("/portfolio", portfolio, function (response) {
+                    // update portfolio in the database
+                    $.post("/portfolioUpdate", portfolio, function (response) {
                         console.log(`server post response returned... ${response.toString()}`);
                     });
                     // update UI
@@ -213,9 +215,10 @@ function appendHistory(transaction) {
     }
 }
 
-function getQuotes() {
+function getQuotes(tnum) {
     let ticker;
     let quote;
+    let trnumber = tnum;
 
     // implementation of fetching and rendering quotes, updating chart
     function getQuote() {
@@ -243,7 +246,6 @@ function getQuotes() {
     // implementation of buying / selling stocks
     function trade() {
         let quantity = $(".get-quote input[name='quantity']").val();
-        let trnumber = 1;
         if (Number(quote) > 0) {
             if (Number(quantity) > 0) {
                 switch ($("input:checked").val()) {
@@ -258,7 +260,7 @@ function getQuotes() {
                         alert("Please select an option");
                         break;
                 }
-                storeTransaction(userID, ticker, quantity, quote, trnumber).then(response => {
+                storeTransaction(currentUserID, ticker, quantity, quote, trnumber).then(response => {
                     trnumber++;
                     appendHistory(response);
                 }, error => {
