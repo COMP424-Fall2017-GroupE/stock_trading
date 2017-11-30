@@ -1,0 +1,40 @@
+
+<!doctype html>
+<html xmlns:fb="http://www.facebook.com/2008/fbml">
+  <head>
+    <title>Login with Facebook</title>
+	<meta name="google-signin-client_id" content="YOUR_CLIENT_ID.apps.googleusercontent.com">
+<link href="http://www.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" rel="stylesheet"> 
+ </head>
+  <body>
+  
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <script>function onSignIn(googleUser) {
+  var profile = googleUser.getBasicProfile();
+  console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+  console.log('Name: ' + profile.getName());
+  console.log('Image URL: ' + profile.getImageUrl());
+  console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+}
+
+  function signOut() {
+    var auth2 = gapi.auth2.getAuthInstance();
+    auth2.signOut().then(function () {
+      console.log('User signed out.');
+    });
+  }
+</script>
+       <!-- Before login --> 
+<div class="container">
+<h1>Login with Facebook</h1>
+           Not Connected
+<div>
+      <a href="https://web.facebook.com/v2.2/dialog/oauth?client_id=642963862396213&redirect_uri=http%3A%2F%2Fdemos.krizna.com%2F1353%2Ffbconfig.php&state=0a0a951233d683d5c373993cd535a0ad&sdk=php-sdk-4.0.15&scope&_rdc=1&_rdr"><img src="login.png"></a></div>
+	  </div>
+	  
+	  <div class="g-signin2" data-onsuccess="onSignIn"></div>
+	  <a href="#" onclick="signOut();">Sign out</a>
+      </div>
+	  
+      </body>
+</html>

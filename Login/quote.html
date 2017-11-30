@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Get a quote</title>
+    <link rel="stylesheet" href="../src/css/stockapp.css">
+</head>
+<body>
+<header>
+    <h1>Get quotes, buy, sell...</h1>
+</header>
+<main>
+    <!-- ticker input section -->
+    <section class="get-quote">
+        <h5>Type a ticker symbol to get a quote:</h5>
+        <input type="text" name="ticker"><br>
+        <button>Get quote</button>
+    </section>
+
+    <!-- output section -->
+    <section class="render-quote"></section>
+
+    <!-- chart section -->
+    <section class="chart"></section>
+
+    <!-- trade section -->
+    <section class="trade">
+        <h5>Select Buy or Sell and enter quantity:</h5>
+        <input type="radio" name="trade-type" value="buy"> Buy
+        <input type="radio" name="trade-type" value="sell"> Sell <br>
+        <input type="number" min="0" name="quantity"><br>
+        <button>Buy/Sell</button>
+    </section>
+    <!-- history section -->
+    <section class="history"></section>
+
+</main>
+<br>
+<nav><a href="index.html">Homepage</a></nav>
+<hr>
+<footer>
+    COMP 424 Client-Side Web Design Fall 2017
+</footer>
+<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="js/getQuotes.js"></script>
+</body>
+</html>
