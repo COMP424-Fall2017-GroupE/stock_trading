@@ -22,11 +22,13 @@ mongoose.connect('mongodb://localhost/stocktrading', {useMongoClient: true})
     });
 
 // define mongoose schemas
+// a stock
 var stockSchema = new mongoose.Schema({
     "Ticker": String,
     "Quantity": Number
 });
 
+// a user portfolio
 var portfolioSchema = new mongoose.Schema({
     "UserID": Number,
     "Money": Number,
@@ -35,8 +37,8 @@ var portfolioSchema = new mongoose.Schema({
     ]
 });
 
+// a transaction
 var transactionSchema = new mongoose.Schema({
-    "UserID": Number,
     "Date": Date,
     "Number": Number,
     "Type": String,
@@ -46,35 +48,61 @@ var transactionSchema = new mongoose.Schema({
     "Sum": Number
 });
 
+// a user list of transactions
+var transactionListSchema = new mongoose.Schema({
+    "UserID": Number,
+    "Transactions": [
+        transactionSchema
+    ]
+});
+
 // define mongoose models
 var Stock = mongoose.model("Stock", stockSchema);
 var Portfolio = mongoose.model("Portfolio", portfolioSchema);
 var Transaction = mongoose.model("Transaction", transactionSchema);
+var TransactionList = mongoose.model("TransactionList", transactionListSchema);
 
-// post endpoint to save a transaction
-app.post("/transaction", function (req, res) {
-    var myData = new Transaction({
+// post endpoint to update a transaction list
+app.post("/transactionListUpdate", function (req, res) {
+    TransactionList.findOneAndUpdate(
+        {UserID: req.body.UserID},
+
+        {
+            $push: {
+                Transactions: req.body.Transaction
+            }
+        },
+
+        {returnOriginal: false},
+
+        function (error, result) {
+            if (error !== null) {
+                console.log(error);
+                res.send("error reported");
+            } else {
+                res.send("TransactionList successfully updated");
+            }
+        });
+});
+
+// post endpoint to save an initial transaction list
+app.post("/transactionList", function (req, res) {
+    var myData = new TransactionList({
         "UserID": req.body.UserID,
-        "Date": req.body.Date,
-        "Number": req.body.Number,
-        "Type": req.body.Type,
-        "Symbol": req.body.Symbol,
-        "Quantity": req.body.Quantity,
-        "Price": req.body.Price,
-        "Sum": req.body.Sum
+        "Transactions": req.body.Transactions
     });
     myData.save(function (error, result) {
         if (error !== null) {
             console.log(error);
             res.send("error reported");
         } else {
-            res.send("transaction saved to database");
+            res.send("transaction list saved to database");
         }
     });
 });
 
 // post endpoint to update a portfolio
-app.post("/portfolio", function (req, res) {
+app.post("/portfolioUpdate", function (req, res) {
     Portfolio.findOneAndUpdate(
         {UserID: req.body.UserID},
 
@@ -98,31 +126,43 @@ app.post("/portfolio", function (req, res) {
 });
 
 
-// // post endpoint to save a portfolio
-// app.post("/portfolio", function (req, res) {
-//     var myData = new Portfolio({
-//         "UserID": req.body.UserID,
-//         "Money": req.body.Money,
-//         "Stocks": req.body.Stocks
-//     });
-//     myData.save(function (error, result) {
-//         if (error !== null) {
-//             console.log(error);
-//             res.send("error reported");
-//         } else {
-//             res.send("portfolio saved to database");
-//         }
-//     });
-// });
+// post endpoint to save a new portfolio
+app.post("/portfolio", function (req, res) {
+    var myData = new Portfolio({
+        "UserID": req.body.UserID,
+        "Money": req.body.Money,
+        "Stocks": req.body.Stocks
+    });
+    myData.save(function (error, result) {
+        if (error !== null) {
+            console.log(error);
+            res.send("error reported");
+        } else {
+            res.send("portfolio saved to database");
+        }
+    });
+});
 
-// get endpoint
+// get endpoint to get a portfolio from the database
 app.get("/portfolio.json", function (req, res) {
-    Portfolio.findOne({UserID: 1}, function (error, portfolio) {
+    Portfolio.findOne({UserID: req.query.UserID}, function (error, portfolio) {
         if (error !== null) {
             console.log(error);
             res.send("error reported");
         } else {
             res.json(portfolio);
+        }
+    });
+});
+
+// get endpoint to get a list of transactions from the database
+app.get("/transactions.json", function (req, res) {
+    TransactionList.findOne({UserID: req.query.UserID}, function (error, transactions) {
+        if (error !== null) {
+            console.log(error);
+            res.send("error reported");
+        } else {
+            res.json(transactions.Transactions);
         }
     });
 });
