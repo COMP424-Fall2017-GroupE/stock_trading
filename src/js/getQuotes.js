@@ -4,6 +4,7 @@ const currentUserID = 1;
 const spinner = $(".spinner img");
 const chart = $(".chart");
 const apiKey = "38HEIOY4TO9U5D4S";
+var currentQuotes = [];
 
 
 function mainPageLoad() {
@@ -78,10 +79,19 @@ function displayPortfolio(portfolio) {
     });
 }
 
-// fetch quotes from an external API
+// fetch quotes from memory / from an external API
 function fetchQuote(ticker) {
     spinner.show();
     return new Promise((resolve, reject) => {
+        // check if this quote has already been fetched and return it immediately
+        currentQuotes.forEach(function (item) {
+            if (item.Ticker === ticker) {
+                spinner.hide();
+                resolve(item.Price);
+            }
+        });
+
+        // if this is the first fetching within the session, query external API
         let url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${ticker}&interval=60min&outputsize=compact&apikey=${apiKey}`;
         // parse JSON
         $.getJSON(url)
@@ -90,6 +100,11 @@ function fetchQuote(ticker) {
                     // find necessary quote
                     let key = json["Meta Data"]["3. Last Refreshed"];
                     let quote = Number(json["Time Series (60min)"][key]["4. close"]);
+                    currentQuotes.push(
+                        {
+                            "Ticker": ticker,
+                            "Price": quote.toFixed(2)
+                        });
                     spinner.hide();
                     resolve(quote.toFixed(2));
                 }
@@ -241,7 +256,6 @@ function getQuotes(tnum) {
                 }
                 storeTransaction(currentUserID, ticker, quantity, quote, trnumber).then(response => {
                     trnumber++;
-                    appendHistory(response);
                 }, error => {
                     alert(`an error while storing a transaction has been encountered: ${error}`);
                 });
