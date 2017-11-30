@@ -194,27 +194,6 @@ function storeTransaction(userID, ticker, quantity, quote, trnumber) {
     });
 }
 
-// display / append transactions history
-function appendHistory(transaction) {
-    let $tr = $("<tr>");
-    let $td = [];
-    if (transaction !== {}) {
-        let date = `${transaction.Date.getMonth()}/${transaction.Date.getDate()}/${transaction.Date.getFullYear()}`;
-        $td.push($("<td>").html(date));
-        $td.push($("<td>").html(transaction.Type));
-        $td.push($("<td>").html(transaction.Symbol));
-        $td.push($("<td>").html(Math.abs(transaction.Quantity)));
-        $td.push($("<td>").html(transaction.Price));
-        $td.push($("<td>").html(transaction.Sum));
-
-        $td.forEach(function (item) {
-            $tr.append(item);
-        });
-
-        $("#transactionsHistory tbody").append($tr);
-    }
-}
-
 function getQuotes(tnum) {
     let ticker;
     let quote;
