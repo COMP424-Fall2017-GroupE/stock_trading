@@ -1,9 +1,15 @@
+/*
+ * Main application client-side logic
+ * Author: @aafedorov
+ */
+
 "use strict";
 // change when user management is ready
 const currentUserID = 1;
 const spinner = $(".spinner img");
 const chart = $(".chart");
-const apiKey = "38HEIOY4TO9U5D4S";
+// const apiKey = "38HEIOY4TO9U5D4S";
+const apiKey = "GA0OUDLQRC75F1Q1";
 var currentQuotes = [];
 
 
