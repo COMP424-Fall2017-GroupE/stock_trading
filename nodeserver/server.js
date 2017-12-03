@@ -32,6 +32,8 @@ var stockSchema = new mongoose.Schema({
 var portfolioSchema = new mongoose.Schema({
     "UserID": Number,
     "Money": Number,
+    "InitialValue": Number,
+    "CurrentValue": Number,
     "Stocks": [
         stockSchema
     ]
@@ -109,6 +111,7 @@ app.post("/portfolioUpdate", function (req, res) {
         {
             $set: {
                 Money: req.body.Money,
+                CurrentValue: req.body.CurrentValue,
                 Stocks: req.body.Stocks
             }
         },

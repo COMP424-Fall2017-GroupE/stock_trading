@@ -174,6 +174,7 @@ function storeTransaction(userID, ticker, quantity, quote, trnumber) {
             // check if there is sufficient money / stock and update transactions and portfolio
             if ((portfolio.Money + Number(dealSum)) >= 0) {
                 if ((portfolio.Stocks[index].Quantity + Number(quantity) >= 0)) {
+                    // create transaction
                     let transaction =
                         {
                             "UserID": userID,
@@ -187,8 +188,20 @@ function storeTransaction(userID, ticker, quantity, quote, trnumber) {
                                 "Sum": dealSum
                             }
                         };
+                    // update portfolio money and stocks
                     portfolio.Money += Number(dealSum);
                     portfolio.Stocks[index].Quantity += Number(quantity);
+
+                    // update portfolio current value
+                    let currentValue = portfolio.Money;
+                    portfolio.Stocks.forEach(function (stock) {
+                        currentQuotes.forEach(function (quote) {
+                            if (stock.Ticker === quote.Ticker) {
+                                currentValue += stock.Quantity * quote.Price;
+                            }
+                        });
+                    });
+                    portfolio.CurrentValue = currentValue;
 
                     // update transactions list in the database
                     $.post("/transactionListUpdate", transaction, function (response) {
