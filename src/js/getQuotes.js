@@ -15,7 +15,6 @@ var currentQuotes = [];
 
 function mainPageLoad() {
     chart.hide();
-
     getPortfolio(currentUserID).then(response => {
         displayPortfolio(response).then(function () {
             getTransactions(currentUserID).then(response => {
@@ -59,7 +58,7 @@ function displayPortfolio(portfolio) {
 
         $("#portfolio tbody").append($tr);
 
-        portfolio.Stocks.forEach(function (item, i) {
+        portfolio.Stocks.forEach(function (item) {
             if (item.Quantity > 0) {
                 fetchQuote(item.Ticker).then(response => {
                     $tr = $("<tr>");
@@ -80,6 +79,8 @@ function displayPortfolio(portfolio) {
                 return;
             }
         });
+        let pl = (portfolio.CurrentValue - portfolio.InitialValue).toFixed(2);
+        $(".profit-loss").empty().append(pl);
         spinner.hide();
         resolve();
     });
@@ -89,40 +90,45 @@ function displayPortfolio(portfolio) {
 function fetchQuote(ticker) {
     spinner.show();
     return new Promise((resolve, reject) => {
-        // check if this quote has already been fetched and return it immediately
+        // check if this quote has already been fetched
+        let foundPrice = 0;
         currentQuotes.forEach(function (item) {
             if (item.Ticker === ticker) {
-                spinner.hide();
-                resolve(item.Price);
+                foundPrice = item.Price;
             }
         });
-
-        // if this is the first fetching within the session, query external API
-        let url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${ticker}&interval=60min&outputsize=compact&apikey=${apiKey}`;
-        // parse JSON
-        $.getJSON(url)
-            .done(function (json) {
-                if (typeof json !== 'undefined' && typeof json !== 'null' && !json["Error Message"]) {
-                    // find necessary quote
-                    let key = json["Meta Data"]["3. Last Refreshed"];
-                    let quote = Number(json["Time Series (60min)"][key]["4. close"]);
-                    currentQuotes.push(
-                        {
-                            "Ticker": ticker,
-                            "Price": quote.toFixed(2)
-                        });
+        // if there is a quote in memory, return it immediately
+        if (foundPrice > 0) {
+            spinner.hide();
+            resolve(foundPrice);
+        } else {
+            // if this is the first fetching within the session, query external API
+            let url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${ticker}&interval=60min&outputsize=compact&apikey=${apiKey}`;
+            // parse JSON
+            $.getJSON(url)
+                .done(function (json) {
+                    if (typeof json !== 'undefined' && typeof json !== 'null' && !json["Error Message"]) {
+                        // find necessary quote
+                        let key = json["Meta Data"]["3. Last Refreshed"];
+                        let quote = Number(json["Time Series (60min)"][key]["4. close"]);
+                        currentQuotes.push(
+                            {
+                                "Ticker": ticker,
+                                "Price": quote.toFixed(2)
+                            });
+                        spinner.hide();
+                        resolve(quote.toFixed(2));
+                    }
+                    else {
+                        spinner.hide();
+                        reject(`${ticker} ticker symbol not found`);
+                    }
+                })
+                .fail(function () {
                     spinner.hide();
-                    resolve(quote.toFixed(2));
-                }
-                else {
-                    spinner.hide();
-                    reject(`${ticker} ticker symbol not found`);
-                }
-            })
-            .fail(function () {
-                spinner.hide();
-                reject(`Failed to fetch ${ticker} data`);
-            });
+                    reject(`Failed to fetch ${ticker} data`);
+                });
+        }
     });
 }
 
