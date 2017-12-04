@@ -134,6 +134,8 @@ app.post("/portfolio", function (req, res) {
     var myData = new Portfolio({
         "UserID": req.body.UserID,
         "Money": req.body.Money,
+        "InitialValue": req.body.InitialValue,
+        "CurrentValue": req.body.CurrentValue,
         "Stocks": req.body.Stocks
     });
     myData.save(function (error, result) {

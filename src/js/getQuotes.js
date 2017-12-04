@@ -5,7 +5,7 @@
 
 "use strict";
 // change when user management is ready
-const currentUserID = 1;
+const currentUserID = 2;
 const spinner = $(".spinner img");
 const chart = $(".chart");
 // const apiKey = "38HEIOY4TO9U5D4S";
@@ -30,8 +30,31 @@ function getPortfolio(userID) {
     return new Promise((resolve, reject) => {
         $.getJSON("portfolio.json", {UserID: userID})
             .done(function (json) {
-                spinner.hide();
-                resolve(json);
+                // check if there is no portfolio in the database and create an empty one
+                if (json === null) {
+                    let newPortfolio = {
+                        "UserID": userID,
+                        "Money": 10000,
+                        "InitialValue": 10000,
+                        "CurrentValue": 10000,
+                        "Stocks": []
+                    };
+                    $.post("/portfolio", newPortfolio, function (response) {
+                        console.log(`server post response returned... ${response.toString()}`);
+                    });
+                    let newTransactions = {
+                        "UserID": userID,
+                        "Transactions": []
+                    };
+                    $.post("/transactionList", newTransactions, function (response) {
+                        console.log(`server post response returned... ${response.toString()}`);
+                    });
+                    // recursive call to resolve the promise correctly
+                    resolve(getPortfolio(userID));
+                } else {
+                    spinner.hide();
+                    resolve(json);
+                }
             })
             .fail(function () {
                 spinner.hide();
