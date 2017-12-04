@@ -1,3 +1,8 @@
+/*
+ * Main application server-side code
+ * Author: @aafedorov
+ */
+
 var express = require('express');
 var http = require('http');
 var mongoose = require('mongoose');
@@ -11,8 +16,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 http.createServer(app).listen(3030);
 
 // establish database connection
-
-// var uri = "mongodb://afedorov:jwlupKsfzMXX6XNt@stocktrading-shard-00-00-reaq6.mongodb.net:27017,stocktrading-shard-00-01-reaq6.mongodb.net:27017,stocktrading-shard-00-02-reaq6.mongodb.net:27017/test?ssl=true&replicaSet=StockTrading-shard-0&authSource=admin";
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://localhost/stocktrading', {useMongoClient: true})
     .catch(function (connError) {
@@ -64,7 +67,7 @@ var Portfolio = mongoose.model("Portfolio", portfolioSchema);
 var Transaction = mongoose.model("Transaction", transactionSchema);
 var TransactionList = mongoose.model("TransactionList", transactionListSchema);
 
-// post endpoint to update a transaction list
+// post end point to update a transaction list
 app.post("/transactionListUpdate", function (req, res) {
     TransactionList.findOneAndUpdate(
         {UserID: req.body.UserID},
@@ -87,7 +90,7 @@ app.post("/transactionListUpdate", function (req, res) {
         });
 });
 
-// post endpoint to save an initial transaction list
+// post end point to save an initial transaction list
 app.post("/transactionList", function (req, res) {
     var myData = new TransactionList({
         "UserID": req.body.UserID,
@@ -98,12 +101,12 @@ app.post("/transactionList", function (req, res) {
             console.log(error);
             res.send("error reported");
         } else {
-            res.send("transaction list saved to database");
+            res.send("new TransactionList saved to database");
         }
     });
 });
 
-// post endpoint to update a portfolio
+// post end point to update a portfolio
 app.post("/portfolioUpdate", function (req, res) {
     Portfolio.findOneAndUpdate(
         {UserID: req.body.UserID},
@@ -129,7 +132,7 @@ app.post("/portfolioUpdate", function (req, res) {
 });
 
 
-// post endpoint to save a new portfolio
+// post end point to save a new portfolio
 app.post("/portfolio", function (req, res) {
     var myData = new Portfolio({
         "UserID": req.body.UserID,
@@ -143,12 +146,12 @@ app.post("/portfolio", function (req, res) {
             console.log(error);
             res.send("error reported");
         } else {
-            res.send("portfolio saved to database");
+            res.send("new portfolio saved to database");
         }
     });
 });
 
-// get endpoint to get a portfolio from the database
+// get end point to get a portfolio from the database
 app.get("/portfolio.json", function (req, res) {
     Portfolio.findOne({UserID: req.query.UserID}, function (error, portfolio) {
         if (error !== null) {
@@ -160,7 +163,7 @@ app.get("/portfolio.json", function (req, res) {
     });
 });
 
-// get endpoint to get a list of transactions from the database
+// get end point to get a list of transactions of a particular user from the database
 app.get("/transactions.json", function (req, res) {
     TransactionList.findOne({UserID: req.query.UserID}, function (error, transactions) {
         if (error !== null) {
