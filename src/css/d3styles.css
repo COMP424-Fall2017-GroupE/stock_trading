@@ -1,0 +1,217 @@
+/**
+ * basic styles for D3 tests
+ **/
+
+body {
+color: #666;
+}
+
+h3, h4 {
+padding: 10px 0 10px 0;
+color: #000;
+}
+
+h5 {
+color: #444;
+padding: 0 0 10px 0;
+text-decoration: underline;
+/*border-top: 1px solid #ddd;*/
+}
+
+a:hover {
+color: #8abb44;
+text-decoration:none;
+}
+
+.caption {
+font-style: italic;
+}
+
+.btn-login {
+border: 1px solid #000;
+background-color: #fff;
+}
+
+.btn-login a {
+color: #000;
+}
+
+.btn-login:hover {
+background-color: #000;
+}
+
+.btn-login:hover a {
+color: #fff;
+text-decoration: none;
+}
+
+.btn-logout {
+background-color: #000;
+}
+
+.btn-logout a {
+color: #fff;
+}
+
+.btn-logout:hover {
+background-color: #fff;
+border: 1px solid #000;
+}
+
+.btn-logout:hover a {
+color: #000;
+text-decoration: none;
+}
+
+.breadcrumbs {
+padding: 10px;
+font-size: 12px;
+}
+
+div.tester {
+/*border-top: 1px solid #ddd;*/
+padding: 10px;
+}
+
+.footer {
+padding: 10px;
+}
+
+/**
+ * visualisation styles...
+ **/
+
+/*svg*/
+svg {
+ padding: 20px;
+ }
+
+.svg-axes1 {
+ padding-top: 0px;
+ border-top-style: solid;
+ border-top-width: 2px;
+ border-top-color: #000;
+ }
+
+/*axis*/
+.axis path,
+.axis line {
+ 	fill: none;
+ 	stroke: black;
+ 	shape-rendering: crispEdges;
+}
+ 
+.axis text {
+	font-family: serif;
+ 	font-size: 11px;
+}
+ 
+.axis .grid-line{
+    stroke: black;
+    shape-rendering: crispEdges;
+    stroke-opacity: .2;
+}
+
+/*graph, scatterplots...*/
+.line{
+    fill: none;    
+    stroke: steelblue;
+    stroke-width: 2;
+}
+
+.dot {
+  fill: #fff;
+  stroke: steelblue;
+}
+
+.area {
+    stroke: none;
+    fill: steelblue;
+    fill-opacity: .2;
+}
+
+.pie text{
+    fill: white;
+    font-weight: bold;
+}
+
+.circle {
+    stroke: none;
+    fill: red;
+    fill-opacity: .7;
+}
+
+.cross {
+    stroke: none;
+    fill: blue;
+    fill-opacity: .7;
+}
+
+.diamond {
+    stroke: none;
+    fill: green;
+    fill-opacity: .7;
+}
+
+.square{
+    stroke: none;
+    fill: yellow;
+    fill-opacity: .7;
+}
+
+.triangle-down{
+    stroke: none;
+    fill: blueviolet;
+    fill-opacity: .7;
+}
+
+.triangle-up{
+    stroke: none;
+    fill: darkred;
+    fill-opacity: .7;
+}
+
+.bubble{
+    fill-opacity: .3;
+}
+
+.bar{
+    stroke: none;
+    fill: steelblue;
+}
+
+/*scatter*/
+.axis-scatter path, .axis line {
+    fill: none;
+    stroke: #58496f;
+    shape-rendering: crispEdges;
+}
+
+.axis-scatter text {
+    font: 10px sans-serif;
+}
+ 
+/*tips and text...*/
+.highlight {
+fill: #990033;
+}
+
+#tip {
+position: absolute;
+width: 90px;
+height: auto;
+padding: 5px;
+background-color: #363b4f;
+color: #ffffff;
+}
+
+#tip.hidden {
+display: none;
+}
+
+#tip p {
+margin: 0;
+font-family: sans-serif;
+font-size: 14px;
+line-height: 25px;
+}
