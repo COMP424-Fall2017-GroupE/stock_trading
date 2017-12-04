@@ -71,27 +71,26 @@
 
               <!-- Data article -->
             <article class="get-data">
-                <h5>Type a ticker symbol to get a quote plus some abstract visualizations:</h5>
+                <h5>Type a ticker symbol to see raw data, text, and some color:</h5>
                 <input type="text" name="ticker" title="ticker"><br>
-                <button>Get data</button>
+                <button>Get Values</button>
             </article>
 
+
+
+              <!-- Data article -->
+            <article class="get-shape">
+                <h5>Type a ticker symbol to see basic shapes:</h5>
+                <input type="text" name="ticker" title="ticker"><br>
+                <button>Get Shapes</button>
+            </article>
 
 
               <!-- Data article -->
             <article class="get-chart">
-                <h5>Type a ticker symbol to get a quote plus some charts:</h5>
+                <h5>Type a ticker symbol to see a bar chart:</h5>
                 <input type="text" name="ticker" title="ticker"><br>
-                <button>Get charts</button>
-            </article>
-
-
-
-              <!-- Data article -->
-            <article class="get-axes1">
-                <h5>Type a ticker symbol to get a quote axes version 1:</h5>
-                <input type="text" name="ticker" title="ticker"><br>
-                <button>Get axes 1</button>
+                <button>Get Chart</button>
             </article>
 
 
@@ -99,7 +98,7 @@
             <article class="get-grid1">
                 <h5>Type a ticker symbol to get a quote axes version 1:</h5>
                 <input type="text" name="ticker" title="ticker"><br>
-                <button>Get grid 1</button>
+                <button>Get Scatterplot</button>
             </article>
 
 
@@ -154,11 +153,15 @@
         integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 <script>window.jQuery || document.write('<script src="js/vendor/jquery-3.2.1.min.js"><\/script>')</script>
 <script src="js/plugins.js"></script>
-<script type="text/javascript" src="js/getData.js"></script>
+<script type="text/javascript" src="js/getQuotes.js"></script>
 
 <!-- D3 scripts -->
 <script src="https://d3js.org/d3.v3.min.js"></script>
 <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+<script type="text/javascript" src="js/drawShapes.js"></script>
+<script type="text/javascript" src="js/drawValues.js"></script>
+<script type="text/javascript" src="js/drawBarChart.js"></script>
+<script type="text/javascript" src="js/drawScatterplot.js"></script>
 
 </body>
 </html>
