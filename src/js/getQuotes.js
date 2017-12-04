@@ -15,8 +15,23 @@ var currentQuotes = [];
 
 function mainPageLoad() {
     chart.hide();
+    // currentQuotes.push(
+    //     {
+    //         "Ticker": "AAPL",
+    //         "Price": 171.23
+    //     },{
+    //         "Ticker": "GOOG",
+    //         "Price": 1011.25
+    //     },{
+    //         "Ticker": "FORD",
+    //         "Price": 1.35
+    //     },{
+    //         "Ticker": "MSFT",
+    //         "Price": 83.69
+    //     });
     getPortfolio(currentUserID).then(response => {
-        displayPortfolio(response).then(function () {
+        displayPortfolio(response).then(response => {
+            $(".profit-loss").empty().append((response.CurrentValue - response.InitialValue).toFixed(2));
             getTransactions(currentUserID).then(response => {
                 getQuotes(response.length);
             });
@@ -81,7 +96,7 @@ function displayPortfolio(portfolio) {
 
         $("#portfolio tbody").append($tr);
 
-        portfolio.Stocks.forEach(function (item) {
+        portfolio.Stocks.forEach(function (item, i) {
             if (item.Quantity > 0) {
                 fetchQuote(item.Ticker).then(response => {
                     $tr = $("<tr>");
@@ -102,12 +117,30 @@ function displayPortfolio(portfolio) {
                 return;
             }
         });
-        let pl = (portfolio.CurrentValue - portfolio.InitialValue).toFixed(2);
-        $(".profit-loss").empty().append(pl);
         spinner.hide();
-        resolve();
+        resolve(portfolio);
     });
 }
+
+// update portfolio current value
+function updateCurrentValue(portfolio) {
+    return new Promise((resolve, reject) => {
+        let port = portfolio;
+        let currentValue = port.Money;
+        port.Stocks.forEach(function (stock) {
+            currentQuotes.forEach(function (quote) {
+                if (stock.Ticker === quote.Ticker) {
+                    currentValue += stock.Quantity * quote.Price;
+                }
+            });
+        });
+        port.CurrentValue = currentValue;
+        // $(".profit-loss").empty().append((port.CurrentValue - port.InitialValue).toFixed(2));
+        resolve(port);
+    });
+}
+
+
 
 // fetch quotes from memory / from an external API
 function fetchQuote(ticker) {
@@ -221,17 +254,6 @@ function storeTransaction(userID, ticker, quantity, quote, trnumber) {
                     portfolio.Money += Number(dealSum);
                     portfolio.Stocks[index].Quantity += Number(quantity);
 
-                    // update portfolio current value
-                    let currentValue = portfolio.Money;
-                    portfolio.Stocks.forEach(function (stock) {
-                        currentQuotes.forEach(function (quote) {
-                            if (stock.Ticker === quote.Ticker) {
-                                currentValue += stock.Quantity * quote.Price;
-                            }
-                        });
-                    });
-                    portfolio.CurrentValue = currentValue;
-
                     // update transactions list in the database
                     $.post("/transactionListUpdate", transaction, function (response) {
                         console.log(`server post response returned... ${response.toString()}`);
@@ -241,7 +263,12 @@ function storeTransaction(userID, ticker, quantity, quote, trnumber) {
                         console.log(`server post response returned... ${response.toString()}`);
                     });
                     // update UI
-                    displayPortfolio(portfolio);
+                    displayPortfolio(portfolio).then(response => {
+                        updateCurrentValue(response).then(response => {
+                            $(".profit-loss").empty().append((response.CurrentValue - response.InitialValue).toFixed(2));
+                        });
+                    });
+
                     resolve(transaction.Transaction);
                 }
                 else {
