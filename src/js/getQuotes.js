@@ -1,14 +1,20 @@
+/*
+ * Main application client-side logic
+ * Author: @aafedorov
+ */
+
 "use strict";
 // change when user management is ready
-const currentUserID = 1;
+const currentUserID = 2;
 const spinner = $(".spinner img");
 const chart = $(".chart");
-const apiKey = "38HEIOY4TO9U5D4S";
+// const apiKey = "38HEIOY4TO9U5D4S";
+const apiKey = "GA0OUDLQRC75F1Q1";
+var currentQuotes = [];
 
 
 function mainPageLoad() {
     chart.hide();
-
     getPortfolio(currentUserID).then(response => {
         displayPortfolio(response).then(function () {
             getTransactions(currentUserID).then(response => {
@@ -24,8 +30,31 @@ function getPortfolio(userID) {
     return new Promise((resolve, reject) => {
         $.getJSON("portfolio.json", {UserID: userID})
             .done(function (json) {
-                spinner.hide();
-                resolve(json);
+                // check if there is no portfolio in the database and create an empty one
+                if (json === null) {
+                    let newPortfolio = {
+                        "UserID": userID,
+                        "Money": 10000,
+                        "InitialValue": 10000,
+                        "CurrentValue": 10000,
+                        "Stocks": []
+                    };
+                    $.post("/portfolio", newPortfolio, function (response) {
+                        console.log(`server post response returned... ${response.toString()}`);
+                    });
+                    let newTransactions = {
+                        "UserID": userID,
+                        "Transactions": []
+                    };
+                    $.post("/transactionList", newTransactions, function (response) {
+                        console.log(`server post response returned... ${response.toString()}`);
+                    });
+                    // recursive call to resolve the promise correctly
+                    resolve(getPortfolio(userID));
+                } else {
+                    spinner.hide();
+                    resolve(json);
+                }
             })
             .fail(function () {
                 spinner.hide();
@@ -52,7 +81,7 @@ function displayPortfolio(portfolio) {
 
         $("#portfolio tbody").append($tr);
 
-        portfolio.Stocks.forEach(function (item, i) {
+        portfolio.Stocks.forEach(function (item) {
             if (item.Quantity > 0) {
                 fetchQuote(item.Ticker).then(response => {
                     $tr = $("<tr>");
@@ -73,35 +102,56 @@ function displayPortfolio(portfolio) {
                 return;
             }
         });
+        let pl = (portfolio.CurrentValue - portfolio.InitialValue).toFixed(2);
+        $(".profit-loss").empty().append(pl);
         spinner.hide();
         resolve();
     });
 }
 
-// fetch quotes from an external API
+// fetch quotes from memory / from an external API
 function fetchQuote(ticker) {
     spinner.show();
     return new Promise((resolve, reject) => {
-        let url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${ticker}&interval=60min&outputsize=compact&apikey=${apiKey}`;
-        // parse JSON
-        $.getJSON(url)
-            .done(function (json) {
-                if (typeof json !== 'undefined' && typeof json !== 'null' && !json["Error Message"]) {
-                    // find necessary quote
-                    let key = json["Meta Data"]["3. Last Refreshed"];
-                    let quote = Number(json["Time Series (60min)"][key]["4. close"]);
+        // check if this quote has already been fetched
+        let foundPrice = 0;
+        currentQuotes.forEach(function (item) {
+            if (item.Ticker === ticker) {
+                foundPrice = item.Price;
+            }
+        });
+        // if there is a quote in memory, return it immediately
+        if (foundPrice > 0) {
+            spinner.hide();
+            resolve(foundPrice);
+        } else {
+            // if this is the first fetching within the session, query external API
+            let url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${ticker}&interval=60min&outputsize=compact&apikey=${apiKey}`;
+            // parse JSON
+            $.getJSON(url)
+                .done(function (json) {
+                    if (typeof json !== 'undefined' && typeof json !== 'null' && !json["Error Message"]) {
+                        // find necessary quote
+                        let key = json["Meta Data"]["3. Last Refreshed"];
+                        let quote = Number(json["Time Series (60min)"][key]["4. close"]);
+                        currentQuotes.push(
+                            {
+                                "Ticker": ticker,
+                                "Price": quote.toFixed(2)
+                            });
+                        spinner.hide();
+                        resolve(quote.toFixed(2));
+                    }
+                    else {
+                        spinner.hide();
+                        reject(`${ticker} ticker symbol not found`);
+                    }
+                })
+                .fail(function () {
                     spinner.hide();
-                    resolve(quote.toFixed(2));
-                }
-                else {
-                    spinner.hide();
-                    reject(`${ticker} ticker symbol not found`);
-                }
-            })
-            .fail(function () {
-                spinner.hide();
-                reject(`Failed to fetch ${ticker} data`);
-            });
+                    reject(`Failed to fetch ${ticker} data`);
+                });
+        }
     });
 }
 
@@ -153,6 +203,7 @@ function storeTransaction(userID, ticker, quantity, quote, trnumber) {
             // check if there is sufficient money / stock and update transactions and portfolio
             if ((portfolio.Money + Number(dealSum)) >= 0) {
                 if ((portfolio.Stocks[index].Quantity + Number(quantity) >= 0)) {
+                    // create transaction
                     let transaction =
                         {
                             "UserID": userID,
@@ -166,8 +217,20 @@ function storeTransaction(userID, ticker, quantity, quote, trnumber) {
                                 "Sum": dealSum
                             }
                         };
+                    // update portfolio money and stocks
                     portfolio.Money += Number(dealSum);
                     portfolio.Stocks[index].Quantity += Number(quantity);
+
+                    // update portfolio current value
+                    let currentValue = portfolio.Money;
+                    portfolio.Stocks.forEach(function (stock) {
+                        currentQuotes.forEach(function (quote) {
+                            if (stock.Ticker === quote.Ticker) {
+                                currentValue += stock.Quantity * quote.Price;
+                            }
+                        });
+                    });
+                    portfolio.CurrentValue = currentValue;
 
                     // update transactions list in the database
                     $.post("/transactionListUpdate", transaction, function (response) {
@@ -241,7 +304,6 @@ function getQuotes(tnum) {
                 }
                 storeTransaction(currentUserID, ticker, quantity, quote, trnumber).then(response => {
                     trnumber++;
-                    appendHistory(response);
                 }, error => {
                     alert(`an error while storing a transaction has been encountered: ${error}`);
                 });

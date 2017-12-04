@@ -1,0 +1,44 @@
+{
+    "UserID": 1,
+    "Money": 4649.529999999996,
+    "Stocks": [
+        {
+            "Quantity": 3,
+            "Ticker": "GOOG"
+        },
+        {
+            "Ticker": "MSFT",
+            "Quantity": 3
+        },
+        {
+            "Ticker": "L",
+            "Quantity": 0
+        },
+        {
+            "Ticker": "AAPL",
+            "Quantity": 2
+        },
+        {
+            "Ticker": "D",
+            "Quantity": 38
+        },
+        {
+            "Quantity": 20,
+            "Ticker": "G"
+        },
+        {
+            "Quantity": 1,
+            "Ticker": "F"
+        },
+        {
+            "Quantity": 100,
+            "Ticker": "J"
+        },
+        {
+            "Ticker": "K",
+            "Quantity": 20
+        }
+    ],
+    "CurrentValue": 13473.829999999994,
+    "InitialValue": 10000.0
+}

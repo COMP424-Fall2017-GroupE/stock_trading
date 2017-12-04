@@ -4,7 +4,7 @@
  */
 
 "use strict";
-const currentUserID = 1;
+const currentUserID = 2;
 const spinner = $(".spinner img");
 
 function transactionsHistory(userID) {
