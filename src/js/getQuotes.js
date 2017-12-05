@@ -29,11 +29,13 @@ function mainPageLoad() {
     //         "Ticker": "MSFT",
     //         "Price": 83.69
     //     });
-    getPortfolio(currentUserID).then(response => {
-        displayPortfolio(response).then(response => {
-            $(".profit-loss").empty().append((response.CurrentValue - response.InitialValue).toFixed(2));
-            getTransactions(currentUserID).then(response => {
-                getQuotes(response.length);
+    getPortfolio(currentUserID).then(response1 => {
+        displayPortfolio(response1).then(response2 => {
+            updateCurrentValue(response2).then(response3 => {
+                $(".profit-loss").empty().append((response3.CurrentValue - response3.InitialValue).toFixed(2));
+                getTransactions(currentUserID).then(response4 => {
+                    getQuotes(response4.length);
+                });
             });
         });
     });
@@ -82,21 +84,22 @@ function getPortfolio(userID) {
 function displayPortfolio(portfolio) {
     spinner.show();
     return new Promise((resolve, reject) => {
+        let port = portfolio;
         $("#portfolio tbody").empty();
 
         let $tr = $("<tr>");
         let $td = [];
         $td.push($("<td>").html("Money"));
-        $td.push($("<td>").html(portfolio.Money.toFixed(2)));
+        $td.push($("<td>").html(port.Money.toFixed(2)));
         $td.push($("<td>").html("-"));
-        $td.push($("<td>").html(portfolio.Money.toFixed(2)));
+        $td.push($("<td>").html(port.Money.toFixed(2)));
         $td.forEach(function (item) {
             $tr.append(item);
         });
 
         $("#portfolio tbody").append($tr);
 
-        portfolio.Stocks.forEach(function (item, i) {
+        port.Stocks.forEach(function (item, i) {
             if (item.Quantity > 0) {
                 fetchQuote(item.Ticker).then(response => {
                     $tr = $("<tr>");
@@ -118,7 +121,7 @@ function displayPortfolio(portfolio) {
             }
         });
         spinner.hide();
-        resolve(portfolio);
+        resolve(port);
     });
 }
 
@@ -139,8 +142,6 @@ function updateCurrentValue(portfolio) {
         resolve(port);
     });
 }
-
-
 
 // fetch quotes from memory / from an external API
 function fetchQuote(ticker) {
@@ -258,14 +259,15 @@ function storeTransaction(userID, ticker, quantity, quote, trnumber) {
                     $.post("/transactionListUpdate", transaction, function (response) {
                         console.log(`server post response returned... ${response.toString()}`);
                     });
-                    // update portfolio in the database
-                    $.post("/portfolioUpdate", portfolio, function (response) {
-                        console.log(`server post response returned... ${response.toString()}`);
-                    });
+
                     // update UI
-                    displayPortfolio(portfolio).then(response => {
-                        updateCurrentValue(response).then(response => {
+                    updateCurrentValue(portfolio).then(response => {
+                        displayPortfolio(response).then(response => {
                             $(".profit-loss").empty().append((response.CurrentValue - response.InitialValue).toFixed(2));
+                            // update portfolio in the database
+                            $.post("/portfolioUpdate", portfolio, function (response) {
+                                console.log(`server post response returned... ${response.toString()}`);
+                            });
                         });
                     });
 
