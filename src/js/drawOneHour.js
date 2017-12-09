@@ -34,7 +34,7 @@ function getHistoricalData() {
             fetchData(ticker).then(response => {
                 historyData = response;
                 
-                $(".render-data").empty().append($quote.html(`The current price of ${ticker} is $${quote}`));
+                $(".render-data").empty().append($historyData.html(`The current price of ${ticker} is $${historyData}`));
 
             }, error => {
                 $(".render-data").empty().append($historyData.html(error));
@@ -86,7 +86,9 @@ function getHistoricalData() {
 
           i++; // increment the index
           if(i>60){
-                  drawBasic(HourlySeries)
+                  console.log(HourlySeries);  
+                  drawTable(HourlySeries);
+                  drawOneDayLinechart(HourlySeries);
                   return HourlySeries;
           }
 
@@ -112,12 +114,10 @@ function getHistoricalData() {
 
 
     // D3 functions
-
-
-    function drawBasic(dailySeries){
+    function drawTable(hourlySeries){
 
 //sample D3 array
-var data = dailySeries;
+var data = hourlySeries;
 
 
 var currentSymbol = ticker;
@@ -171,19 +171,98 @@ d3.select('#test-containerTable').append('h5').attr("class", "report").text('Pri
 
 
 
-    function drawOneDayLinechart(dailySeries) {
+    function drawOneDayLinechart(hourlySeries) {
 
-
-
+        var data = hourlySeries;
+        var d = hourlySeries;
         // testing testing 
 
 
 
 
 
+// begin(d);
+drawIt(d);
 
 
-    }
+
+
+
+function drawIt(d){
+
+
+         d.forEach(function(d, i) {
+
+       d.timestamp = d.Time;
+       d.close = +d.Close;
+       console.log(d);
+       return d
+
+     });
+
+
+
+var svg = d3.select("svg"),
+    margin = {top: 20, right: 20, bottom: 30, left: 50},
+    width = +svg.attr("width") - margin.left - margin.right,
+    height = +svg.attr("height") - margin.top - margin.bottom,
+    g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var parseTime = d3.timeParse("%d-%b-%y");
+
+var x = d3.scaleTime()
+    .rangeRound([0, width]);
+
+var y = d3.scaleLinear()
+    .rangeRound([height, 0]);
+
+var line = d3.line()
+    .x(function(d) { return x(d.timestamp); })
+    .y(function(d) { return y(d.close); });
+
+
+
+
+  x.domain(d3.extent(data, function(d) { return d.timestamp; }));
+  y.domain(d3.extent(data, function(d) { return d.close; }));
+
+  g.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x))
+    .select(".domain")
+      .remove();
+
+  g.append("g")
+      .call(d3.axisLeft(y))
+    .append("text")
+      .attr("fill", "#000")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", "0.71em")
+      .attr("text-anchor", "end")
+      .text("Price ($)");
+
+  g.append("path")
+      .datum(data)
+      .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 1.5)
+      .attr("d", line);
+
+}
+
+  
+
+
+
+}
+
+
+
+
+
 
 
 
