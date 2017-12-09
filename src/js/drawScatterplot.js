@@ -318,11 +318,11 @@ return weekMonths;
  var monthNum = monthNos(data);
     
 //create nest, get length per leaf, and sum leafs to get total per month...
-var nest = d3.nest()
+var nest = d3v3.nest()
     .key(function (d, i) { return d.month; })
     .rollup(function(leaves) { 
     return {
-    "length": leaves.length, "month_total": d3.sum(leaves, function(d) {return parseFloat(d.weekTotal);})
+    "length": leaves.length, "month_total": d3v3.sum(leaves, function(d) {return parseFloat(d.weekTotal);})
     } 
     })
     .entries(monthNum);
@@ -333,7 +333,7 @@ var cMonthlyTotals = [];
 nest.forEach(function(d, i) {
     //console.log(d.values['month_total'], i);
     monthlyTotals.push(d.values['month_total']);
-    var cTotal = d3.sum(monthlyTotals);
+    var cTotal = d3v3.sum(monthlyTotals);
     cMonthlyTotals.push(cTotal);
     });
 
@@ -375,7 +375,7 @@ function lineChart() { // <-1A
             _margins = {top: 220, left: 120, right: 120, bottom: 120},
             _x, _y,
             _data = [],
-            _colors = d3.scale.category20(),
+            _colors = d3v3.scale.category20(),
             _svg,
             _bodyG,
             _line;
@@ -398,7 +398,7 @@ function lineChart() { // <-1A
     }
     
     function renderXAxis(axesG){
-        var xAxis = d3.svg.axis()
+        var xAxis = d3v3.svg.axis()
                 .scale(_x.range([0, quadrantWidth()]))
                 .orient("bottom");        
         axesG.append("g")
@@ -418,7 +418,7 @@ function lineChart() { // <-1A
     }
     
     function renderYAxis(axesG){
-        var yAxis = d3.svg.axis()
+        var yAxis = d3v3.svg.axis()
                 .scale(_y.range([quadrantHeight(), 0]))
                 .orient("left");
                 
@@ -461,7 +461,7 @@ function lineChart() { // <-1A
        renderScatter();
     }
     function renderLines() {
-        _line = d3.svg.line() //<-4A
+        _line = d3v3.svg.line() //<-4A
                         .x(function (d) { return _x(d.x); })
                         .y(function (d) { return _y(d.y); });
                         
@@ -505,18 +505,21 @@ function lineChart() { // <-1A
         .data(list)
         .enter()
         .append('circle')
+        .attr("fill", "green")
         .attr("class", "dot _" + i);
             _bodyG.selectAll("circle._" + i)
-                    .data(list)                    
+                    .data(list)                
                     .style("stroke", function (d) { 
                         return _colors(i); //<-4F
                     })
                     .transition() //<-4G
                     .attr("cx", function (d) { return _x(d.x); })
                     .attr("cy", function (d) { return _y(d.y); })
-                    .attr("r", function (d) { return (Math.sqrt(d.y)/1.5)/400; }); //divide by 200 to make numbers
+                    .attr("r", function (d) { return (Math.sqrt(d.y)/1.5)/800; }) //divide by 800 to make numbers
+                    .attr("fill", "green");
     });
-    
+
+
     }
     
     function xStart() {
@@ -608,8 +611,8 @@ var maxHeight = Math.max.apply(Math, chartData);
 //console.log(maxHeight);
     
 var chart = lineChart()
-        .x(d3.scale.linear().domain([0, 11]))
-        .y(d3.scale.linear().domain([0, maxHeight+50]));
+        .x(d3v3.scale.linear().domain([0, 11]))
+        .y(d3v3.scale.linear().domain([0, maxHeight+50]));
         
 data.forEach(function (series) {
 console.log(series);
