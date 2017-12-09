@@ -24,17 +24,7 @@ function getHistoricalData() {
 
     function getData() {
 
-        // first get a current quote for the item
-        ticker = $(".get-oneHour input").val().toUpperCase();
-        let $quote = $("<p>");
-        if (ticker !== "") {
-        fetchQuote(ticker).then(response => {
-        quote = response;
-    },
-    error => {
-                $(".render-quote").empty().append($quote.html(error));
-            });
-    }
+
 
         // now get the historical data
         ticker = $(".get-oneHour input").val().toUpperCase();
@@ -67,10 +57,11 @@ function getHistoricalData() {
 
 
 
+
       for (var key in obj) {
 
         if (obj.hasOwnProperty(key)) {
-        console.log(key);
+//       console.log(key);
 
 //            console.log(key);                                            
 
@@ -94,6 +85,10 @@ function getHistoricalData() {
 
 
           i++; // increment the index
+          if(i>60){
+                  drawBasic(HourlySeries)
+                  return HourlySeries;
+          }
 
         // walk(val);   // recursive call
         }
@@ -101,7 +96,7 @@ function getHistoricalData() {
 
 
 
-      console.log(HourlySeries);
+     // console.log(HourlySeries);
 
 
 
@@ -110,8 +105,7 @@ function getHistoricalData() {
 
       // call draw with data
 
-      drawBasic(HourlySeries)
-      return HourlySeries;
+
 
     }
 
@@ -125,36 +119,12 @@ function getHistoricalData() {
 //sample D3 array
 var data = dailySeries;
 
-//set title
-d3.select('#test-container3').append('h5').text('Basic - add array value to element (with colour)');    
-//output array value instead of dummy text
-d3.select('#test-container3').selectAll('p').data(data).enter().append('p').text(function(d) { return 'Timestamp: ' + d.minuteTimeStamp +  '  Closing Price: ' + d.close  + '  Volume: ' + d.volume; });
 
- //set title
-d3.select('#test-container4').append('h5').text('Basic - add key & value to element');  
-//output array value instead of dummy text
-d3.select('#test-container4').selectAll('p').data(data).enter().append('p').text(function(d, i) { return 'key = '+ i + ', value = ' + d.volume; });
-    
-//bind css style to elements
-d3.select('#test-container3').selectAll('p').style('color', 'blue');
-    
-//bind css style to even or numbers from array
-d3.select('#test-container3').selectAll('p')
-    .data(data)
-    .style('color', function(d) {
-        if (d.volume % 2 == 0) {
-            return 'red';
-        } else {
-            return 'green';
-        }
-    });
-
-
-
-
+var currentSymbol = ticker;
 
 //set title
-d3.select('#test-containerTable').append('h5').text('Prices per minute for the last hour');  
+d3.select('#test-containerTable').append('h5').attr("class", "report").text('Prices per minute for the last hour for ').append('h5').text(currentSymbol);
+    
 
 
     // function to create a table from http://bl.ocks.org/jfreels/6734025
@@ -285,7 +255,7 @@ d3.select('#test-containerTable').append('h5').text('Prices per minute for the l
                         // find necessary data
 
 
-                        console.log(json);
+                     //   console.log(json);
 
                         let key = json["Meta Data"]["3. Last Refreshed"];
                         let hourly = json["Time Series (1min)"];
@@ -293,7 +263,7 @@ d3.select('#test-containerTable').append('h5').text('Prices per minute for the l
 
                         let quotes = Number(json["Time Series (1min)"][key]["4. close"]);
 
-                        console.log(hourly);
+                    //    console.log(hourly);
                         walkAndDrawHourlyPrices(hourly);
 
                  //       drawOneDayLinechart();
