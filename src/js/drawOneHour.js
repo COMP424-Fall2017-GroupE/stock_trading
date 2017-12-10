@@ -129,7 +129,7 @@ var data = hourlySeries;
 var currentSymbol = ticker;
 
 //set title
-d3.select('#test-containerTable').append('h5').attr("class", "report").text('Prices per minute for the last hour for ').append('h5').text(currentSymbol);
+d3.select('#test-containerTable').append('h5').attr("class", "report").text('All data points available for the last hour for ' + '' + currentSymbol).append('h5');
     
 
 
@@ -182,6 +182,7 @@ d3.select('#test-containerTable').append('h5').attr("class", "report").text('Pri
 
         var data = hourlySeries;
         var d = hourlySeries;
+        var currentSymbol = ticker;
         // testing testing 
 
 
@@ -193,12 +194,17 @@ drawIt(d);
 
 
 
-
-
 function drawIt(d){
 
+//set title
+d3.select('.render-chart-svg').append('h5').attr("class", "report").text('Prices per minute for the last hour for ' + '' + currentSymbol);
 
-var svg = d3.select("svg"),
+
+
+
+    
+
+var svg = d3.select(".sv2"),
     margin = {top: 20, right: 20, bottom: 30, left: 50},
     width = +svg.attr("width") - margin.left - margin.right,
     height = +svg.attr("height") - margin.top - margin.bottom,
@@ -212,13 +218,13 @@ var x = d3.scaleTime()
 var y = d3.scaleLinear()
     .rangeRound([height, 0]);
 
-var line = d3.line()
+
+
+
+//draw the close value
+var closeLine = d3.line()
     .x(function(d) { return x(d.IndexNumber); })
     .y(function(d) { return y(d.Close); });
-
-
-
-
 
 
   x.domain(d3.extent(data, function(d) { return d.IndexNumber; }));
@@ -247,7 +253,28 @@ var line = d3.line()
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
       .attr("stroke-width", 1.5)
-      .attr("d", line);
+      .attr("d", closeLine);
+
+
+//draw the close value
+var openLine = d3.line()
+    .x(function(d) { return x(d.IndexNumber); })
+    .y(function(d) { return y(d.Open); });
+
+
+  x.domain(d3.extent(data, function(d) { return d.IndexNumber; }));
+  y.domain(d3.extent(data, function(d) { return d.Open; }));
+
+
+  g.append("path")
+      .datum(data)
+      .attr("fill", "none")
+      .attr("stroke", "lightseagreen")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 1.5)
+      .attr("d", openLine);
+
 
 
      };
