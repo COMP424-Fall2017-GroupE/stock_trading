@@ -15,27 +15,11 @@ var currentQuotes = [];
 
 function mainPageLoad() {
     chart.hide();
-    // currentQuotes.push(
-    //     {
-    //         "Ticker": "AAPL",
-    //         "Price": 171.23
-    //     },{
-    //         "Ticker": "GOOG",
-    //         "Price": 1011.25
-    //     },{
-    //         "Ticker": "FORD",
-    //         "Price": 1.35
-    //     },{
-    //         "Ticker": "MSFT",
-    //         "Price": 83.69
-    //     });
-    getPortfolio(currentUserID).then(response1 => {
-        displayPortfolio(response1).then(response2 => {
-            updateCurrentValue(response2).then(response3 => {
-                $(".profit-loss").empty().append((response3.CurrentValue - response3.InitialValue).toFixed(2));
-                getTransactions(currentUserID).then(response4 => {
-                    getQuotes(response4.length);
-                });
+    getPortfolio(currentUserID).then(response => {
+        displayPortfolio(response).then(response => {
+            $(".profit-loss").empty().append((response.CurrentValue - response.InitialValue).toFixed(2));
+            getTransactions(currentUserID).then(response => {
+                getQuotes(response.length);
             });
         });
     });
