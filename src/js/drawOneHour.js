@@ -71,7 +71,10 @@ function getHistoricalData() {
            var close = obj[key]["4. close"]; // the objects closing price
            var open = obj[key]["1. open"]; // the objects closing price
 
-           var minuteTimeStamp = key;  // to add the timestamp as a string to the new object
+           var dateTimeStamp = key.substr(0,key.indexOf(' '));  // to add the timestamp as a string to the new object
+           var minuteTimeStamp = key.substr(key.indexOf(' ')+1);  // to add the timestamp as a string to the new object
+           var indexNumber = i;
+
 
            var newMember = i;  // call each day a member of our daily series
 
@@ -82,12 +85,15 @@ function getHistoricalData() {
           HourlySeries[newMember].Close = close; // add a timestamp as a string
           HourlySeries[newMember].Time = key; // add a dateString property and set the value to the date
           HourlySeries[newMember].Volume = volume; // add a volume property
-
+          HourlySeries[newMember].DateString = dateTimeStamp; // add a volume property
+          HourlySeries[newMember].MinuteTimeStamp = minuteTimeStamp; // add a volume property
+          HourlySeries[newMember].IndexNumber = indexNumber;; // add a volume property
 
           i++; // increment the index
-          if(i>60){
+          if(i>59){
                   console.log(HourlySeries);  
                   drawTable(HourlySeries);
+
                   drawOneDayLinechart(HourlySeries);
                   return HourlySeries;
           }
@@ -173,6 +179,7 @@ d3.select('#test-containerTable').append('h5').attr("class", "report").text('Pri
 
     function drawOneDayLinechart(hourlySeries) {
 
+
         var data = hourlySeries;
         var d = hourlySeries;
         // testing testing 
@@ -191,17 +198,6 @@ drawIt(d);
 function drawIt(d){
 
 
-         d.forEach(function(d, i) {
-
-       d.timestamp = d.Time;
-       d.close = +d.Close;
-       console.log(d);
-       return d
-
-     });
-
-
-
 var svg = d3.select("svg"),
     margin = {top: 20, right: 20, bottom: 30, left: 50},
     width = +svg.attr("width") - margin.left - margin.right,
@@ -217,14 +213,16 @@ var y = d3.scaleLinear()
     .rangeRound([height, 0]);
 
 var line = d3.line()
-    .x(function(d) { return x(d.timestamp); })
-    .y(function(d) { return y(d.close); });
+    .x(function(d) { return x(d.IndexNumber); })
+    .y(function(d) { return y(d.Close); });
 
 
 
 
-  x.domain(d3.extent(data, function(d) { return d.timestamp; }));
-  y.domain(d3.extent(data, function(d) { return d.close; }));
+
+
+  x.domain(d3.extent(data, function(d) { return d.IndexNumber; }));
+  y.domain(d3.extent(data, function(d) { return d.Close; }));
 
   g.append("g")
       .attr("transform", "translate(0," + height + ")")
@@ -251,13 +249,21 @@ var line = d3.line()
       .attr("stroke-width", 1.5)
       .attr("d", line);
 
+
+     };
+
+
+
+
+
+
 }
 
   
 
 
 
-}
+
 
 
 
