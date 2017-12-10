@@ -190,94 +190,219 @@ d3.select('#test-containerTable').append('h5').attr("class", "report").text('All
 
 
 // begin(d);
-drawIt(d);
+drawCloseValues(d);
+drawOpenAndCloseValues(d);
 
 
 
-function drawIt(d){
-
-//set title
-d3.select('.render-chart-svg').append('h5').attr("class", "report").text('Prices per minute for the last hour for ' + '' + currentSymbol);
-
-
-
-
+    // function to draw just the closing values for the last hour
+    function drawCloseValues(d){
+    
+    //set title
+    d3.select('.render-chart-svg').append('h5').attr("class", "report").text('Prices per minute for the last hour for ' + '' + currentSymbol);
     
 
-var svg = d3.select(".sv2"),
-    margin = {top: 20, right: 20, bottom: 30, left: 50},
-    width = +svg.attr("width") - margin.left - margin.right,
-    height = +svg.attr("height") - margin.top - margin.bottom,
-    g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    //Our SVG starts hidden to save space, make it visible
+    d3.select(".sv2").classed("hidden", false);
+    
+    
+        
+    
+    var svg = d3.select(".sv2"),
+        margin = {top: 20, right: 20, bottom: 30, left: 50},
+        width = +svg.attr("width") - margin.left - margin.right,
+        height = +svg.attr("height") - margin.top - margin.bottom,
+        g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    
+    var parseTime = d3.timeParse("%d-%b-%y");
+    
+    var x = d3.scaleTime()
+        .rangeRound([width, 0]);
+    
+    var y = d3.scaleLinear()
+        .rangeRound([height, 0]);
+    
+    
+    var bisectDate = d3.bisector(function(d) { return d.IndexNumber; }).left,
+        formatValue = d3.format(",.2f"),
+        formatCurrency = function(d) { return "$" + formatValue(d); };
+    
+    
+    
+    
+    
+    //draw the close value
+    var closeLine = d3.line()
+        .x(function(d) { return x(d.IndexNumber); })
+        .y(function(d) { return y(d.Close); });
+    
+    
+      x.domain(d3.extent(data, function(d) { return d.IndexNumber; }));
+      y.domain(d3.extent(data, function(d) { return d.Close; }));
+    
+      g.append("g")
+          .attr("transform", "translate(0," + height + ")")
+          .call(d3.axisBottom(x))
+        .select(".domain")
+          .remove();
+    
+      g.append("g")
+          .call(d3.axisLeft(y))
+        .append("text")
+          .attr("fill", "#000")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 6)
+          .attr("dy", "0.71em")
+          .attr("text-anchor", "end")
+          .text("Price ($)");
+    
+      g.append("path")
+          .datum(data)
+          .attr("fill", "none")
+          .attr("stroke", "steelblue")
+          .attr("stroke-linejoin", "round")
+          .attr("stroke-linecap", "round")
+          .attr("stroke-width", 2.5)
+          .attr("d", closeLine);
+    
+    
+    
+    
+      var focus = g.append("g")
+          .attr("class", "focus")
+          .style("display", "none");
+    
+      focus.append("circle")
+          .attr("r", 6.5);
+    
+      focus.append("text")
+          .attr("x", 9)
+          .attr("dy", ".35em");
+    
+      svg.append("rect")
+          .attr("class", "overlay")
+          .attr("width", "960")
+          .attr("height", "500")
+          .on("mouseover", function() { focus.style("display", null); })
+          .on("mouseout", function() { focus.style("display", "none"); })
+          .on("mousemove", mousemove);
+    
+      function mousemove() {
+        var x0 = x.invert(d3.mouse(this)[0]),
+            i = bisectDate(data, x0, 1),
+            d0 = data[i - 1],
+            d1 = data[i],
+            d = x0 - d0.IndexNumber > d1.IndexNumber - x0 ? d1 : d0;
+        focus.attr("transform", "translate(" + x(d.IndexNumber) + "," + y(d.Close) + ")");
+        focus.select("text").text("$" + d.Close + "  |  " + d.MinuteTimeStamp).attr("class", "myText")
+        ;
+      }
+    
+    
+    };
 
-var parseTime = d3.timeParse("%d-%b-%y");
-
-var x = d3.scaleTime()
-    .rangeRound([width, 0]);
-
-var y = d3.scaleLinear()
-    .rangeRound([height, 0]);
 
 
 
 
-//draw the close value
-var closeLine = d3.line()
-    .x(function(d) { return x(d.IndexNumber); })
-    .y(function(d) { return y(d.Close); });
-
-
-  x.domain(d3.extent(data, function(d) { return d.IndexNumber; }));
-  y.domain(d3.extent(data, function(d) { return d.Close; }));
-
-  g.append("g")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x))
-    .select(".domain")
-      .remove();
-
-  g.append("g")
-      .call(d3.axisLeft(y))
-    .append("text")
-      .attr("fill", "#000")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", "0.71em")
-      .attr("text-anchor", "end")
-      .text("Price ($)");
-
-  g.append("path")
-      .datum(data)
-      .attr("fill", "none")
-      .attr("stroke", "steelblue")
-      .attr("stroke-linejoin", "round")
-      .attr("stroke-linecap", "round")
-      .attr("stroke-width", 1.5)
-      .attr("d", closeLine);
-
-
-//draw the close value
-var openLine = d3.line()
-    .x(function(d) { return x(d.IndexNumber); })
-    .y(function(d) { return y(d.Open); });
-
-
-  x.domain(d3.extent(data, function(d) { return d.IndexNumber; }));
-  y.domain(d3.extent(data, function(d) { return d.Open; }));
-
-
-  g.append("path")
-      .datum(data)
-      .attr("fill", "none")
-      .attr("stroke", "lightseagreen")
-      .attr("stroke-linejoin", "round")
-      .attr("stroke-linecap", "round")
-      .attr("stroke-width", 1.5)
-      .attr("d", openLine);
 
 
 
-     };
+    // function to draw just the closing values for the last hour
+    function drawOpenAndCloseValues(d){
+    
+    //set title
+    d3.select('.render-chart-svg').append('h5').attr("class", "report").text('Prices per minute for the last hour for ' + '' + currentSymbol);
+    
+    
+    //Our SVG starts hidden to save space, make it visible
+    d3.select(".sv3").classed("hidden", false);
+    
+        
+    
+    var svg = d3.select(".sv3"),
+        margin = {top: 20, right: 20, bottom: 30, left: 50},
+        width = +svg.attr("width") - margin.left - margin.right,
+        height = +svg.attr("height") - margin.top - margin.bottom,
+        g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    
+    var parseTime = d3.timeParse("%d-%b-%y");
+    
+    var x = d3.scaleTime()
+        .rangeRound([width, 0]);
+    
+    var y = d3.scaleLinear()
+        .rangeRound([height, 0]);
+    
+    
+    var bisectDate = d3.bisector(function(d) { return d.IndexNumber; }).left,
+        formatValue = d3.format(",.2f"),
+        formatCurrency = function(d) { return "$" + formatValue(d); };
+    
+    
+    
+    
+    
+    //draw the close value
+    var closeLine = d3.line()
+        .x(function(d) { return x(d.IndexNumber); })
+        .y(function(d) { return y(d.Close); });
+    
+    
+      x.domain(d3.extent(data, function(d) { return d.IndexNumber; }));
+      y.domain(d3.extent(data, function(d) { return d.Close; }));
+    
+      g.append("g")
+          .attr("transform", "translate(0," + height + ")")
+          .call(d3.axisBottom(x))
+        .select(".domain")
+          .remove();
+    
+      g.append("g")
+          .call(d3.axisLeft(y))
+        .append("text")
+          .attr("fill", "#000")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 6)
+          .attr("dy", "0.71em")
+          .attr("text-anchor", "end")
+          .text("Price ($)");
+    
+      g.append("path")
+          .datum(data)
+          .attr("fill", "none")
+          .attr("stroke", "steelblue")
+          .attr("stroke-linejoin", "round")
+          .attr("stroke-linecap", "round")
+          .attr("stroke-width", 1.5)
+          .attr("d", closeLine);
+    
+    
+    //draw the open value
+    var openLine = d3.line()
+        .x(function(d) { return x(d.IndexNumber); })
+        .y(function(d) { return y(d.Open); });
+    
+    
+      x.domain(d3.extent(data, function(d) { return d.IndexNumber; }));
+      y.domain(d3.extent(data, function(d) { return d.Open; }));
+    
+    
+      g.append("path")
+          .datum(data)
+          .attr("fill", "none")
+          .attr("stroke", "lightseagreen")
+          .attr("stroke-linejoin", "round")
+          .attr("stroke-linecap", "round")
+          .attr("stroke-width", 1.5)
+          .attr("d", openLine);
+    
+    
+    
+
+    
+    
+    };
 
 
 
