@@ -213,7 +213,7 @@ var svg = d3.select(".sv2"),
 var parseTime = d3.timeParse("%d-%b-%y");
 
 var x = d3.scaleTime()
-    .rangeRound([0, width]);
+    .rangeRound([width, 0]);
 
 var y = d3.scaleLinear()
     .rangeRound([height, 0]);
