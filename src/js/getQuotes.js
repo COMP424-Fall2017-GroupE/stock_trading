@@ -127,7 +127,7 @@ function displayPortfolio(portfolio) {
 
 // update portfolio current value
 function updateCurrentValue(portfolio) {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
         let port = portfolio;
         let currentValue = port.Money;
         port.Stocks.forEach(function (stock) {
