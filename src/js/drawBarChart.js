@@ -140,10 +140,10 @@ var h = 200;
 
 
 //define scales
-var scaleX = d3.scale.linear()
+var scaleX = d3v3.scale.linear()
     .domain([0, d3.max(dataset, function(d) { return d.volume; })])
     .range([0, w]);//set output range from 0 to width of svg
-var scaleY = d3.scale.linear()
+var scaleY = d3v3.scale.linear()
     .domain([0, d3.max(dataset, function(d) { return d.dateString; })])
     .range([0, h]);//set output range from 0 to height of svg
 
