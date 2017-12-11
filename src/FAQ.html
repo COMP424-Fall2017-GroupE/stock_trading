@@ -3,36 +3,39 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Frequently Asked Questions</title>
+    <title>Stock Trading Simulator</title>
     <meta name="description" content="This is the very beginning of a Stock Trading web application">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="manifest" href="../src/site.webmanifest">
-    <link rel="apple-touch-icon" href="../src/icon.png">
+    <link rel="manifest" href="src/site.webmanifest">
+    <link rel="apple-touch-icon" href="src/icon.png">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
     <!-- Place favicon.ico in the root directory -->
 
-    <link rel="stylesheet" href="../src/css/stockapp.css">
+    <link rel="stylesheet" href="/css/stockapp.css">
+    <link rel="stylesheet" href="/css/table.css">
+    <link rel="stylesheet" href="/css/d3styles.css">
+    
 </head>
 <body>
 <header>
-    <nav>
-        <ul>
-            <li><a class="nav_button" href="dashboard.html">Dashboard</a></li>
-            <li><a class="nav_button" href="profile.html">Profile</a></li>
-            <li><a class="nav_button" href="logout.html">Logout</a></li>
-            <li><a class="nav_button" href="FAQ.html">FAQ</a></li>
-            
-        </ul>
-    </nav>
+
 </header>
 
 <main>
 
     <aside id="sidebar">
-        <section id="widget_1"><a>JR</a><img src="../src/img/grav.jpg" width="50" height="50"/></section>
-        <section id="widget_2"><a>portfolios</a></section>
+        <section id="widget_1"><img src="img/buysell.jpg" width="100" height="100"/></section>
+        <nav>
+            <ul>
+                <li class="link-1"><a class="navItem" href="dashboard.html">Dashboard</a></li>
+                <li class="link-2"><a class="navItem" href="history.html">History</a></li>
+                <li class="link-3"><a class="navItem" href="dashboard_visual_tests.html">Visualizations</a></li>
+                <li class="link-1"><a class="navItem" href="FAQ.html">FAQ</a></li>
+            </ul>
+        </nav>
     </aside>
+
 
     <section id="content">
             <h1>FAQ</h1>
@@ -62,9 +65,10 @@
         </ol>
     </section>
 
+
 </main>
 <hr>
-<footer>
+<footer style="padding: 0px 0px 0px 10px">
     COMP 424 Client-Side Web Design Fall 2017
 </footer>
 
@@ -72,11 +76,11 @@
 <!--<script src="../src/js/vendor/modernizr-3.5.0.min.js"></script>-->
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"
         integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-<script>window.jQuery || document.write('<script src="../src/js/vendor/jquery-3.2.1.min.js"><\/script>')</script>
-<script src="../src/js/plugins.js"></script>
-<script src="../src/js/main.js"></script>
-<script type="text/javascript" src="js/getQuotes.js"></script>
+<script>window.jQuery || document.write('<script src="js/vendor/jquery-3.2.1.min.js"><\/script>')</script>
+<script src="js/plugins.js"></script>
+<script type="text/javascript" src="js/history.js"></script>
 
 
 </body>
 </html>
+
