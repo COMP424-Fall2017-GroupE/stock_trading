@@ -9,7 +9,12 @@
 
     <link rel="manifest" href="src/site.webmanifest">
     <link rel="apple-touch-icon" href="src/icon.png">
+
+            <!-- Custom Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+    <link href="/static/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
     <!-- Place favicon.ico in the root directory -->
 
     <link rel="stylesheet" href="/css/stockapp.css">
@@ -25,7 +30,7 @@
 <main>
 
     <aside id="sidebar">
-        <section id="widget_1"><img src="img/buysell.jpg" width="100" height="100"/></section>
+        <section id="widget_1"><img class="wolf-image" src="img/wolf.png" width="100" height="100"/></section>
         <nav>
             <ul>
                 <li class="link-1"><a class="navItem" href="dashboard.html">Dashboard</a></li>
@@ -36,7 +41,10 @@
         </nav>
     </aside>
 
+
+
     <section id="content">
+
         <h2 style="padding: 10px">Welcome to the Stock Trading simulator!</h2>
         <p style="padding: 10px">
             With our application you can easily start your stock trading career.
@@ -71,11 +79,13 @@
         </article>
 
 
+
+<section class="ui-elements">
               <!-- Data article -->
             <article class="get-data">
                 <h5>Type a ticker symbol to see raw data, text, and some color:</h5>
-                <input type="text" name="ticker" title="ticker"><br>
-                <button>Get Values</button>
+                <input class = "alpha-input" type="text" name="ticker" title="ticker"><br>
+                <button class = "alpha-button">Get Values</button>
             </article>
 
 
@@ -83,96 +93,82 @@
               <!-- Data article -->
             <article class="get-shape">
                 <h5>Type a ticker symbol to see basic shapes:</h5>
-                <input type="text" name="ticker" title="ticker"><br>
-                <button>Get Shapes</button>
+                <input class = "alpha-input" type="text" name="ticker" title="ticker"><br>
+                <button class = "alpha-button">Get Shapes</button>
             </article>
 
 
               <!-- Data article -->
             <article class="get-chart">
                 <h5>Type a ticker symbol to see a bar chart:</h5>
-                <input type="text" name="ticker" title="ticker"><br>
-                <button>Get Chart</button>
+                <input class = "alpha-input" type="text" name="ticker" title="ticker"><br>
+                <button class = "alpha-button">Get Chart</button>
             </article>
 
 
               <!-- Data article -->
             <article class="get-grid1">
-                <h5>Type a ticker symbol to get a quote axes version 1:</h5>
-                <input type="text" name="ticker" title="ticker"><br>
-                <button>Get Scatterplot</button>
+                <h5>Type a ticker symbol to get a scatterplot of a year of data:</h5>
+                <input class = "alpha-input" type="text" name="ticker" title="ticker"><br>
+                <button class = "alpha-button">Get Scatterplot</button>
             </article>
 
 
               <!-- Data article -->
             <article class="get-oneHour">
-                <h5>Type a ticker symbol to get a quote axes version 1:</h5>
-                <input type="text" name="ticker" title="ticker"><br>
-                <button>Get One Hour</button>
+                <h5>Type a ticker symbol to get a report on the last hour:</h5>
+                <input class = "alpha-input" type="text" name="ticker" title="ticker"><br>
+                <button class = "alpha-button">Get One Hour</button>
             </article>
 
 
+</section>
 
 
-            <!-- output article -->
-            <article class="render-data">render data</article>
+            <section class="d3-output">
 
+                    <!-- output article -->
+                    <article class="render-data">render data</article>
+        
+        
+        
+        
+                    <!-- output article -->
+                    <article class="render-d3">render d3</article>
+        
+        
+        
+                    <!-- output article -->
+                    <article class="render-charts">render charts</article>
+        
+        
+        
+                    <!-- output article -->
+                    <article class="render-axes1">render axes</article>
+        
+        
+                    <!-- output article -->
+                    <article class="render-grid1">render grid</article>
+        
+        
+        
+        
+        
+        
+                    <!-- svg tests -->
+                    <article class="render-chart-svg"></article>
+        
+                    <svg width="960" height="500" class="sv2 hidden"></svg>
+                
+                    <svg width="960" height="500" class="sv3 hidden"></svg>
+        
+                    <div id="test-containerTable" class="tester"></div>
+        
+        
+                    <div id="test-container" class="tester"></div><div id="test-container2" class="tester"></div><div id="test-container3" class="tester"></div><div id="test-container4" class="tester"></div><div id="tip" class="hidden">
 
-
-
-            <!-- output article -->
-            <article class="render-d3">render d3</article>
-
-
-
-            <!-- output article -->
-            <article class="render-charts">render charts</article>
-
-
-
-            <!-- output article -->
-            <article class="render-axes1">render axes</article>
-
-
-            <!-- output article -->
-            <article class="render-grid1">render grid</article>
-
-
-            <!-- output article -->
-            <article class="render-hour">render 1 hour</article>
-
-
-            <!-- output article -->
-            <article class="render-day">render 1 day</article>
-
-
-            <!-- output article -->
-            <article class="render-week">render 1 week</article>
-
-
-            <!-- output article -->
-            <article class="render-month">render 1 month</article>
-
-
-            <!-- output article -->
-            <article class="render-year">render 1 year</article>
-
-
-
-
-            <!-- svg tests -->
-            <article class="render-chart-svg"></article>
-
-            <svg width="960" height="500" class="sv2 hidden"></svg>
-           
-            <svg width="960" height="500" class="sv3 hidden"></svg>
-
-            <div id="test-containerTable" class="tester"></div>
-
-
-            <div id="test-container" class="tester"></div><div id="test-container2" class="tester"></div><div id="test-container3" class="tester"></div><div id="test-container4" class="tester"></div><div id="tip" class="hidden">
-
-
+            <!-- end D3 output -->
+            </section>
 
 
 
