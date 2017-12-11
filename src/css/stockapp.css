@@ -342,6 +342,22 @@ a:hover {
   line-height: 1.3333333;
 }
 
+.alpha-button:hover {
+  background-color: #42DCA3;
+}
+
+.alpha-button:active {
+  background-color: #fff;
+}
+
+.alpha-button, .alpha-button:before {
+  -webkit-transition: all 0.4s ease;
+          transition: all 0.4s ease;
+}
+
+
+
+
 .alpha-input {
   width: 345px;
   line-height: 1.5;
@@ -366,6 +382,12 @@ max-width: 50%;
   padding-top: 50px;
 }
 
+/* from the dashboard  */
+.profit-loss {
+
+  margin-bottom: 20px;
+
+}
 /* ==========================================================================
    Navigation
    ========================================================================== */
