@@ -46,6 +46,122 @@ function getHistoricalData() {
 
 
 
+//a function to give the min, max, and average of all the values in an array
+    function arrayValuesCalculations(dataArray){
+        var totalVolume = 0;
+        var totalClose = 0;
+        var totalOpen = 0;
+        var i = 0;
+        var testD3Array = [];
+        var volumeArray = [];
+        var closeArray = [];
+        var openArray = [];
+
+
+        dataArray.forEach(function(d, i) {
+
+            totalVolume += parseInt(d.Volume, 10);
+            totalClose += parseFloat(d.Close);
+            totalOpen += parseFloat(d.Open);
+
+
+            // add them to our new object
+            var arrayValuesObject = { };
+                arrayValuesObject['volume'] = totalVolume;
+                arrayValuesObject['close'] = totalClose;
+                arrayValuesObject['open'] = totalOpen;
+
+
+        //    console.log(arrayValuesObject);
+            testD3Array.push(arrayValuesObject);
+
+            // add each value to their respective array to have calculations done on them
+              volumeArray.push(parseInt(d.Volume, 10));
+              openArray.push(parseFloat(d.Open));
+              closeArray.push(parseFloat(d.Close));
+
+
+            i++;
+        });
+
+
+
+    // using D3 array functions on our arrays
+    var minimumVolume = d3.min(volumeArray);
+    var maximumVolume = d3.max(volumeArray);
+    var meanVolume = d3.mean(volumeArray);
+    var minimumOpen = d3.min(openArray);
+    var maximumOpen = d3.max(openArray);
+    var meanOpen = d3.mean(openArray);
+    var maximumClose = d3.min(closeArray);
+    var minimumClose = d3.max(closeArray);
+    var meanClose = d3.mean(closeArray);
+  
+  //  console.log("testing d3min: " + testMinimumVolume + "testing d3max: " + testMaximumOpen + "testing d3mean: " + testMeanClose);
+
+/*
+    console.log("minimum vol: " + minimumVolume);
+    console.log("maximum vol: " + maximumVolume);
+    console.log("mean vol: " + meanVolume);
+    console.log("minimum open: " + minimumOpen);
+    console.log("maximum open: " + maximumOpen);
+    console.log("mean open: " + meanOpen);
+    console.log("minimum close: " + minimumClose);
+    console.log("maximum close: " + maximumClose);
+    console.log("mean close: " + meanClose);
+
+    */
+
+
+
+
+    //Print out calculated values
+    d3.select('#test-container3').append('h3').text("minimum vol: " + minimumVolume); 
+    d3.select('#test-container3').append('h3').text("maximum vol: " + maximumVolume); 
+    d3.select('#test-container3').append('h3').text("mean vol: " + meanVolume); 
+    d3.select('#test-container3').append('h3').text("minimum open: " + minimumOpen); 
+    d3.select('#test-container3').append('h3').text("maximum open: " + maximumOpen); 
+    d3.select('#test-container3').append('h3').text("mean open: " + meanOpen); 
+    d3.select('#test-container3').append('h3').text("minimum close: " + minimumClose); 
+    d3.select('#test-container3').append('h3').text("maximum close: " + maximumClose); 
+    d3.select('#test-container3').append('h3').text("mean close: " + meanClose);  
+
+
+    // comparing with our own calculations
+    var averageSeriesVolume = (testD3Array[59].volume / 60);
+    var averageSeriesClose = (testD3Array[59].close / 60);
+    var averageSeriesOpen = (testD3Array[59].open / 60);
+
+
+
+
+
+    // call D3 array functions on our values object
+    // var minimumCloseValue = d3.min(arrayValuesObject[i]);
+
+
+
+        console.log(averageSeriesVolume);
+        console.log(averageSeriesClose);
+        console.log(averageSeriesOpen);
+        console.log(testD3Array);
+     
+
+
+
+
+
+
+
+
+
+
+
+     //   return totalVolume;
+
+        }
+
+
 
     // not really adjusting volume 
     function walkAndDrawHourlyPrices(obj) {
@@ -56,12 +172,15 @@ function getHistoricalData() {
 
 
 
-
+      var AverageClosePrice = []; // array to hold values for averaging
 
       for (var key in obj) {
 
         if (obj.hasOwnProperty(key)) {
 //       console.log(key);
+
+
+
 
 //            console.log(key);                                            
 
@@ -75,6 +194,7 @@ function getHistoricalData() {
            var minuteTimeStamp = key.substr(key.indexOf(' ')+1);  // to add the timestamp as a string to the new object
            var indexNumber = i;
 
+           AverageClosePrice.push(close);
 
            var newMember = i;  // call each day a member of our daily series
 
@@ -89,8 +209,18 @@ function getHistoricalData() {
           HourlySeries[newMember].MinuteTimeStamp = minuteTimeStamp; // add a volume property
           HourlySeries[newMember].IndexNumber = indexNumber;; // add a volume property
 
+
+
+
+
+
+
           i++; // increment the index
           if(i>59){
+
+                   console.log(AverageClosePrice);
+
+
                   console.log(HourlySeries);  
                   drawTable(HourlySeries);
 
@@ -171,8 +301,6 @@ d3.select('#test-containerTable').append('h5').attr("class", "report").text('All
 
 
 
-
-
     }
 
 
@@ -192,12 +320,17 @@ d3.select('#test-containerTable').append('h5').attr("class", "report").text('All
 // begin(d);
 drawCloseValues(d);
 drawOpenAndCloseValues(d);
+arrayValuesCalculations(d);
 
 
 
     // function to draw just the closing values for the last hour
     function drawCloseValues(d){
     
+
+    d3.select(".sv2").selectAll("*").remove();
+    d3.select(".render-chart-svg").selectAll("*").remove();
+
     //set title
     d3.select('.render-chart-svg').append('h5').attr("class", "report").text('Prices per minute for the last hour for ' + '' + currentSymbol);
     
@@ -254,10 +387,12 @@ drawOpenAndCloseValues(d);
           .attr("y", 6)
           .attr("dy", "0.71em")
           .attr("text-anchor", "end")
+          .attr("class", "priceTag")
           .text("Price ($)");
     
       g.append("path")
           .datum(data)
+          .attr("class", "opLine")
           .attr("fill", "none")
           .attr("stroke", "steelblue")
           .attr("stroke-linejoin", "round")
@@ -310,7 +445,11 @@ drawOpenAndCloseValues(d);
 
     // function to draw just the closing values for the last hour
     function drawOpenAndCloseValues(d){
-    
+
+    d3.select(".sv3").selectAll("*").remove();
+    d3.select(".render-chart-svg").selectAll("*").remove();
+
+
     //set title
     d3.select('.render-chart-svg').append('h5').attr("class", "report").text('Prices per minute for the last hour for ' + '' + currentSymbol);
     
@@ -366,6 +505,7 @@ drawOpenAndCloseValues(d);
           .attr("y", 6)
           .attr("dy", "0.71em")
           .attr("text-anchor", "end")
+          .attr("class", "priceTag")
           .text("Price ($)");
     
       g.append("path")
