@@ -48,7 +48,6 @@ function getHistoricalData() {
             fetchBarChartData(ticker).then(response => {
                 historyData = response;
                 
-                $(".render-data").empty().append($quote.html(`The current price of ${ticker} is $${quote}`));
 
             }, error => {
                 $(".render-data").empty().append($historyData.html(error));
@@ -64,6 +63,7 @@ function getHistoricalData() {
     function walkAndDrawAdjustedVolume(obj) {
       var dailySeries = []; // create a new json object to hold the data
       var i = 0;
+      var tempVolumes = [];
 
 
       for (var key in obj) {
@@ -84,8 +84,16 @@ function getHistoricalData() {
 //          dailySeries[newMember] = val; //  add the data with date as key
           dailySeries[newMember] = { key } ; //  add the data with a number as key
           dailySeries[newMember].dateString = key; // add a dateString property and set the value to the date
-          dailySeries[newMember].volume = volume/200000; // add a volume property
+          dailySeries[newMember].volume = volume; // add a volume property
           dailySeries[newMember].unixDate = new Date(key).getTime() / 1000; // add a unix timestamp
+
+
+          tempVolumes.push(volume);
+
+
+
+
+
 
           i++; // increment the index
 
@@ -93,7 +101,7 @@ function getHistoricalData() {
         }
       }
 
-      console.log(dailySeries);
+    //  console.log(dailySeries);
 
 
 
@@ -101,7 +109,7 @@ function getHistoricalData() {
 
 
       // call draw with data
-        drawBasicCharts(dailySeries)
+        drawBasicCharts(dailySeries, tempVolumes);
 
 
 
@@ -116,7 +124,9 @@ function getHistoricalData() {
     // D3 functions
 
 
-    function drawBasicCharts(dailySeries){
+    function drawBasicCharts(dailySeries, tempVolumes){
+
+
 
 
 
@@ -124,7 +134,7 @@ function getHistoricalData() {
 //sample D3 array
 dailySeries.reverse();
 
-var dataset = dailySeries.slice(70, 99);
+var dataset = dailySeries.slice(0, 30);
 
 
 
@@ -134,144 +144,128 @@ var dataset = dailySeries.slice(70, 99);
 
 
 //specify width and height
-var w = 960;
+var w = 600;
 var h = 200;
 
 
 
 //define scales
 var scaleX = d3v3.scale.linear()
-    .domain([0, d3.max(dataset, function(d) { return d.volume; })])
-    .range([0, w]);//set output range from 0 to width of svg
-var scaleY = d3v3.scale.linear()
-    .domain([0, d3.max(dataset, function(d) { return d.dateString; })])
+    .domain([0, d3.max(dataset, function(dataset) { return dataset.dateString; })])
     .range([0, h]);//set output range from 0 to height of svg
+var scaleY = d3v3.scale.linear()
+    .domain([0, d3.max(dataset, function(dataset) { return dataset.volume; })])
+    .range([0, w]);//set output range from 0 to width of svg
 
 
 
 //add option for padding within the barchart
-var padding = 3;    
-    
-/**
- * build a bar chart - 1
- */ 
-//set title
-d3.select('#test-container').append('h5').text('Bar chart 1 - no correction');
-//create svg and add to the DOM
-var svg = d3.select('#test-container').append('svg').attr('width', w).attr('height', h);
-    
-svg.selectAll('rect')
-    .data(dataset)
-    .enter()
-    .append('rect')
-    .attr('x', function(d, i) {
-        return i * (w / dataset.length); //works well for basic charts but D3 scales are better
-    })
-    .attr('y', 0)
-    .attr('width', w / dataset.length - padding)//get width relative to size of data and svg width - padding
-    .attr('height', function (d) {
-        return d.volume; //outputs bars from upper left corner (they grow down, not up) due to svg upper-left corner for x and y - origin is top left
-    });
-
-/**
- * build a bar chart - 2 (use existing width, height, padding, dataset...)
- */
- //set title
-d3.select('#test-container2').append('h5').text('Bar chart 2 - correction');
-//create svg2 and add to the DOM
-var svg2 = d3.select('#test-container2').append('svg').attr('width', w).attr('height', h);
-    
-    svg2.selectAll('rect')
-        .data(dataset)
-        .enter()
-        .append('rect')
-        .attr('x', function(d, i) {
-            return i * (w / dataset.length); //works well for basic charts but D3 scales are better
-        })
-        .attr('y', function (d) {
-            return h - d.volume;//set top of each bar relative to svg top left - get height minus the data value and then grow bar chart down with height
-        })
-        .attr('width', w / dataset.length - padding)//get width relative to size of data and svg width - padding
-        .attr('height', function (d) {
-            return d.volume;
-        });
-
-/**
- * build a bar chart with colour - 3 (use existing width, height, padding, dataset...)
- */
- //set title
-d3.select('#test-container3').append('h5').text('Bar chart 3 - colours');   
-//create svg3 and add to the DOM
-var svg3 = d3.select('#test-container3').append('svg').attr('width', w).attr('height', h);
-    
-svg3.selectAll('rect')
-    .data(dataset)
-    .enter()
-    .append('rect')
-    .attr('x', function(d, i) {
-        return i * (w / dataset.length); //works well for basic charts but D3 scales are better
-    })
-    .attr('y', function (d) {
-        return h - d.volume;//set top of each bar relative to svg top left - get height minus the data value and then grow bar chart down with height
-    })
-    .attr('width', w / dataset.length - padding)//get width relative to size of data and svg width - padding
-    .attr('height', function (d) {
-        return d.volume;
-    })
-    .attr('fill', function (d) {
-        return 'rgb(0, 0, ' + (d.volume * 5) + ')';//colour is set relative to data per bar
-    });
+var padding = 3;
     
 /**
  * build a bar chart with labels - 4 (use existing width, height, padding, dataset...)
  */
- //set title
-d3.select('#test-container4').append('h5').text('Bar chart 4 - values');        
+  
 //create svg4 and add to the DOM
 var svg4 = d3.select('#test-container4').append('svg').attr('width', w).attr('height', h);
+
+var xScale = d3v3.scale.ordinal()
+    .domain(d3.range(tempVolumes.length))
+    .rangeRoundBands([0, w], 0.1);
+
+var bars = svg4.selectAll("rect").data(dataset);
     
-svg4.selectAll('rect')
-    .data(dataset)
-    .enter()
+
+    bars.enter()
     .append('rect')
     .attr('x', function(d, i) {
         return i * (w / dataset.length); //works well for basic charts but D3 scales are better
     })
     .attr('y', function (d) {
-        return h - d.volume;//set top of each bar relative to svg top left - get height minus the data value and then grow bar chart down with height
+        return h - (d.volume / 250000);//set top of each bar relative to svg top left - get height minus the data value and then grow bar chart down with height
     })
     .attr('width', w / dataset.length - padding)//get width relative to size of data and svg width - padding
     .attr('height', function (d) {
         return d.volume;
     })
     .attr('fill', function (d) {
-    return 'rgb(0, 0, ' + (d.volume * 5) + ')';//colour is set relative to data per bar
-    });
+    return 'rgb(0, ' + (d.volume / 200000) + ', ' + (d.volume / 300000) + ')';//colour is set relative to data per bar
+    })
+    //add highlight on mouseenter
+
+
+
+    .on("mouseenter", function(d, i) {
+
+
+
+
+            d3.select(this)
+            .attr("class", "highlight")
+            .append("div")
+            .attr("class", "mytooltip")
+;
+
+
+
+
+
+
+            d3.select("#tip")
+            .style("left", d3.event.pageX + "px")
+            .style("top", d3.event.pageY + "px")
+            .text("No. " + (d.dateString) + " Volume: " + d.volume);
         
-    //add text to bar chart
-    svg4.selectAll('text')
-        .data(dataset)
-        .enter()
-        .append('text')
-        .text( function(d) {
-            return d.volume;
-        })
-        .attr('x', function(d, i) {
-            return i * (w / dataset.length) + ((w / dataset.length) / 2) - 6; //set posn of text tp centred in bar... -6 for font-size / 2
-        })
-        .attr('y', function(d, i) {
-            return h - (d.volume) - 5;//set labels to the top of the bars with some taken off (-5) to move above bar itself
-        })
-        .attr('font-family', 'serif')
-        .attr('font-size', '12px')
-        .attr('fill', 'navy'); 
+
+            d3.select("#tip")
+            .select("#value")
+            .text(d + " commits");
+    
+            d3.select("#tip").classed("hidden", false);
+
+
+
+
+
+            
+    })
+    //remove highlight class on mouseleave              
+    .on("mouseleave", function(d) {
+        d3.select(this)
+        .attr("class", null);
+        d3.select("#tip").classed("hidden", true);
+    }) 
+    ;
+
+
+    var tooltip = d3.select("body")
+    .append("div")
+    .style("position", "absolute")
+    .style("z-index", "10")
+    .style("visibility", "hidden")
+    .text("a simple tooltip");
+
+
+
+       
+
+
+
+
+
+
+//output text   
+function outputText(text, container) {
+    d3.select(container + " h5").remove();
+    d3.select(container).append("h5").text(text); 
+}
+
+
+
+ outputText("Volume per day", ".svg4");
+
 
     }
-
-
-
-
-
 
 
 
