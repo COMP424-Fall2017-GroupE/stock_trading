@@ -128,7 +128,7 @@ function getHistoricalData() {
 
 
 
-
+var yHigh = d3.max(tempVolumes);
 
 
 //sample D3 array
@@ -151,12 +151,11 @@ var h = 200;
 
 //define scales
 var scaleX = d3v3.scale.linear()
-    .domain([0, d3.max(dataset, function(dataset) { return dataset.dateString; })])
+    .domain([0, dataset.length])
     .range([0, h]);//set output range from 0 to height of svg
 var scaleY = d3v3.scale.linear()
-    .domain([0, d3.max(dataset, function(dataset) { return dataset.volume; })])
-    .range([0, w]);//set output range from 0 to width of svg
-
+    .domain([0, yHigh])//set output range from 0 to width of svg
+    .range([0, h]);//set output range from 0 to height of svg
 
 
 //add option for padding within the barchart
@@ -169,9 +168,6 @@ var padding = 3;
 //create svg4 and add to the DOM
 var svg4 = d3.select('#test-container4').append('svg').attr('width', w).attr('height', h);
 
-var xScale = d3v3.scale.ordinal()
-    .domain(d3.range(tempVolumes.length))
-    .rangeRoundBands([0, w], 0.1);
 
 var bars = svg4.selectAll("rect").data(dataset);
     
@@ -182,14 +178,25 @@ var bars = svg4.selectAll("rect").data(dataset);
         return i * (w / dataset.length); //works well for basic charts but D3 scales are better
     })
     .attr('y', function (d) {
-        return h - (d.volume / 250000);//set top of each bar relative to svg top left - get height minus the data value and then grow bar chart down with height
+                if(d.volume > 10000000){
+                return h - (d.volume / 250000);//set top of each bar relative to svg top left - get height minus the data value and then grow bar chart down with height
+        }
+                else{
+            return h - (d.volume / 15000);//set top of each bar relative to svg top left - get height minus the data value and then grow bar chart down with height
+        }
     })
     .attr('width', w / dataset.length - padding)//get width relative to size of data and svg width - padding
     .attr('height', function (d) {
         return d.volume;
     })
     .attr('fill', function (d) {
-    return 'rgb(0, ' + (d.volume / 200000) + ', ' + (d.volume / 300000) + ')';//colour is set relative to data per bar
+                 if(d.volume > 10000000){
+             return 'rgb(0, ' + (d.volume / 200000) + ', ' + (d.volume / 300000) + ')';//colour is set relative to data per bar
+                 }
+                 else {
+             return 'rgb(0, ' + (d.volume / 2000) + ', ' + (d.volume / 3000) + ')';//colour is set relative to data per bar
+                 }
+
     })
     //add highlight on mouseenter
 
